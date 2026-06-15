@@ -71,6 +71,7 @@ interface EditorStore {
   future: EditorSnapshot[];
   setMockupImage: (url: string, name: string) => void;
   setMockupMode: (mode: MockupMode) => void;
+  setMockupStyle: (style: MockupState["style"]) => void;
   setBorderRadius: (borderRadius: number) => void;
   setShadow: (shadow: ShadowLevel) => void;
   setHideImage: (hideImage: boolean) => void;
@@ -125,6 +126,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
       revokeObjectUrl(previous);
     },
     setMockupMode: (mode) => withHistory({ mockup: { ...get().mockup, mode } }),
+    setMockupStyle: (style) => withHistory({ mockup: { ...get().mockup, style } }),
     setBorderRadius: (borderRadius) => withHistory({ mockup: { ...get().mockup, borderRadius } }),
     setShadow: (shadow) => withHistory({ mockup: { ...get().mockup, shadow } }),
     setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),

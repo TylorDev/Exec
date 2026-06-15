@@ -13,6 +13,7 @@ import { ScrollPanel } from "@/components/ScrollPanel/ScrollPanel";
 import { SegmentedControl } from "@/components/SegmentedControl/SegmentedControl";
 import { SelectControl } from "@/components/SelectControl/SelectControl";
 import { SliderControl } from "@/components/SliderControl/SliderControl";
+import { StylePicker } from "@/components/StylePicker/StylePicker";
 import { ToggleControl } from "@/components/ToggleControl/ToggleControl";
 import { useEditorStore } from "@/store/editorStore";
 import type { AspectRatioId, BackgroundMode, MockupMode, ShadowLevel } from "@/types/editor";
@@ -21,6 +22,7 @@ import styles from "./LeftPanel.module.scss";
 export function LeftPanel() {
   const { mockup, frame, ui } = useEditorStore();
   const setMockupMode = useEditorStore((state) => state.setMockupMode);
+  const setMockupStyle = useEditorStore((state) => state.setMockupStyle);
   const setBorderRadius = useEditorStore((state) => state.setBorderRadius);
   const setShadow = useEditorStore((state) => state.setShadow);
   const setHideImage = useEditorStore((state) => state.setHideImage);
@@ -53,12 +55,7 @@ export function LeftPanel() {
             <MediaDropArea />
           </ControlGroup>
           <ControlGroup title="Style">
-            <SelectControl
-              label="Frame style"
-              onChange={() => undefined}
-              options={[{ label: "Thick Blur Frame", value: "thick-blur-frame" }]}
-              value={mockup.style}
-            />
+            <StylePicker onChange={setMockupStyle} value={mockup.style} />
             <SliderControl label="Border radius" max={64} min={0} onChange={setBorderRadius} suffix="px" value={mockup.borderRadius} />
             <SelectControl<ShadowLevel>
               label="Shadow"

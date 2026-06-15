@@ -11,6 +11,17 @@ const shadowClass = {
   strong: styles.strong,
 };
 
+const styleClass = {
+  bevel: styles.bevel,
+  "liquid-glass": styles.liquidGlass,
+  minimal: styles.minimal,
+  outline: styles.outline,
+  "soft-glow": styles.softGlow,
+  "solid-border": styles.solidBorder,
+  stack: styles.stack,
+  "thick-blur-frame": styles.thickBlurFrame,
+};
+
 interface MockupRendererProps {
   variant?: "scene" | "card";
 }
@@ -33,10 +44,13 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
 
   const image = <img alt={mockup.imageName ?? "Uploaded mockup"} src={mockup.imageUrl} style={radiusStyle} />;
 
+  const frameClasses = `${styles.mockup} ${styleClass[mockup.style]} ${shadowClass[mockup.shadow]} ${styles[variant]}`;
+
   if (mockup.mode === "browser") {
     return (
-      <div className={`${styles.mockup} ${styles.browser} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]} ${styles[variant]}`} style={radiusStyle}>
+      <div className={`${frameClasses} ${styles.browser}`} style={radiusStyle}>
         <div className={styles.blurLayer} />
+        <div className={styles.stackLayer} />
         <div className={styles.content}>
           <div className={styles.browserBar}>
             <i />
@@ -51,8 +65,9 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
   }
 
   return (
-    <div className={`${styles.mockup} ${styles.screenshot} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]} ${styles[variant]}`} style={radiusStyle}>
+    <div className={`${frameClasses} ${styles.screenshot}`} style={radiusStyle}>
       <div className={styles.blurLayer} />
+      <div className={styles.stackLayer} />
       <div className={styles.content}>{image}</div>
     </div>
   );

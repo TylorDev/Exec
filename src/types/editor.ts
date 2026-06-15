@@ -1,5 +1,13 @@
 export type MockupMode = "screenshot" | "browser";
-export type MockupStyle = "thick-blur-frame";
+export type MockupStyle =
+  | "thick-blur-frame"
+  | "bevel"
+  | "liquid-glass"
+  | "solid-border"
+  | "stack"
+  | "outline"
+  | "soft-glow"
+  | "minimal";
 export type ShadowLevel = "none" | "soft" | "medium" | "strong";
 export type AspectRatioId = "16:9" | "4:3" | "1:1" | "9:16" | "21:9" | "custom";
 export type BackgroundMode = "transparent" | "solid" | "image";
