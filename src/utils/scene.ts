@@ -17,5 +17,6 @@ export function getSceneResolution(frame: FrameState) {
 export function getBackgroundCss(frame: FrameState) {
   if (frame.backgroundMode === "transparent") return "transparent";
   if (frame.backgroundMode === "solid") return frame.solidColor;
+  if (frame.backgroundImageUrl) return `url("${frame.backgroundImageUrl}") center / cover no-repeat`;
   return BACKGROUNDS.find((background) => background.id === frame.selectedBackgroundId)?.css ?? BACKGROUNDS[0].css;
 }

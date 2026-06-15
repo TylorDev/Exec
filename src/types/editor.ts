@@ -61,6 +61,8 @@ export interface FrameState {
   customWidth: number;
   customHeight: number;
   backgroundMode: BackgroundMode;
+  backgroundImageUrl: string | null;
+  backgroundImageName: string | null;
   solidColor: string;
   selectedBackgroundId: string;
   blur: number;

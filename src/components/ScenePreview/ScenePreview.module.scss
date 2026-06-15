@@ -25,11 +25,13 @@
   justify-content: center;
   min-height: 0;
   overflow: auto;
-  padding: 24px;
+  padding: 24px 24px 56px;
+  scroll-padding: 24px 24px 56px;
 }
 
 .scene {
   box-shadow: 0 30px 120px rgba(0, 0, 0, 0.42);
+  max-height: calc(100vh - 132px);
   min-width: 320px;
   overflow: hidden;
   position: relative;
@@ -72,10 +74,12 @@
 
 @media (max-width: 720px) {
   .stage {
-    padding: 14px;
+    padding: 14px 14px 44px;
+    scroll-padding: 14px 14px 44px;
   }
 
   .scene {
+    max-height: none;
     min-width: 260px;
   }
 }

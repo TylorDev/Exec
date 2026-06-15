@@ -138,6 +138,7 @@ export function LeftPanel() {
                 </Field>
               </div>
             ) : null}
+            {frame.backgroundMode === "image" ? <MediaDropArea kind="background" /> : null}
           </ControlGroup>
           <ControlGroup title="Background library">
             <BackgroundLibrary />

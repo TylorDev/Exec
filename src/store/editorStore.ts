@@ -37,6 +37,8 @@ const initialFrame: FrameState = {
   customWidth: 1600,
   customHeight: 900,
   backgroundMode: "image",
+  backgroundImageUrl: null,
+  backgroundImageName: null,
   solidColor: "#11131b",
   selectedBackgroundId: BACKGROUNDS[2].id,
   blur: 0,
@@ -96,6 +98,7 @@ interface EditorStore {
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
   setHideUi: (hideUi: boolean) => void;
   setFrame: (frame: Partial<FrameState>) => void;
+  setBackgroundImage: (url: string | null, name?: string) => void;
   setOverlay: (url: string | null) => void;
   setCamera: (camera: Partial<CameraState>) => void;
   applyCameraPreset: (preset: CameraPreset) => void;
@@ -156,6 +159,18 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),
     setFrame: (frame) => withHistory({ frame: { ...get().frame, ...frame } }),
+    setBackgroundImage: (url, name) => {
+      const previous = get().frame.backgroundImageUrl;
+      withHistory({
+        frame: {
+          ...get().frame,
+          backgroundMode: "image",
+          backgroundImageUrl: url,
+          backgroundImageName: url ? name ?? "Background loaded" : null,
+        },
+      });
+      revokeObjectUrl(previous);
+    },
     setOverlay: (url) => {
       const previous = get().frame.overlayUrl;
       withHistory({ frame: { ...get().frame, overlayUrl: url } });

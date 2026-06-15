@@ -6,7 +6,7 @@ import { useEditorStore } from "@/store/editorStore";
 import styles from "./MediaDropArea.module.scss";
 
 interface MediaDropAreaProps {
-  kind?: "mockup" | "overlay";
+  kind?: "mockup" | "overlay" | "background";
 }
 
 const isImage = (file: File) => file.type.startsWith("image/");
@@ -16,11 +16,20 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
   const [isDragging, setIsDragging] = useState(false);
   const setMockupImage = useEditorStore((state) => state.setMockupImage);
   const setOverlay = useEditorStore((state) => state.setOverlay);
-  const imageName = useEditorStore((state) => (kind === "mockup" ? state.mockup.imageName : state.frame.overlayUrl ? "Overlay loaded" : null));
+  const setBackgroundImage = useEditorStore((state) => state.setBackgroundImage);
+  const imageName = useEditorStore((state) => {
+    if (kind === "mockup") return state.mockup.imageName;
+    if (kind === "background") return state.frame.backgroundImageName ?? (state.frame.backgroundImageUrl ? "Background loaded" : null);
+    return state.frame.overlayUrl ? "Overlay loaded" : null;
+  });
 
   const acceptFile = (file: File) => {
     if (!isImage(file)) return;
     const url = URL.createObjectURL(file);
+    if (kind === "background") {
+      setBackgroundImage(url, file.name || "Pasted background");
+      return;
+    }
     if (kind === "overlay") {
       setOverlay(url);
       return;
@@ -29,7 +38,7 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
   };
 
   useEffect(() => {
-    if (kind !== "mockup") return;
+    if (kind === "overlay") return;
 
     const handlePaste = (event: ClipboardEvent) => {
       const file = Array.from(event.clipboardData?.files ?? []).find(isImage);
@@ -39,6 +48,8 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
   });
+
+  const emptyLabel = kind === "overlay" ? "Select overlay" : kind === "background" ? "Drop background image" : "Drop image or screenshot";
 
   return (
     <div
@@ -70,10 +81,10 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
         type="file"
       />
       <ImagePlus />
-      <strong>{imageName ?? (kind === "overlay" ? "Select overlay" : "Drop image or screenshot")}</strong>
+      <strong>{imageName ?? emptyLabel}</strong>
       <span>
         <Upload /> Click or drag
-        {kind === "mockup" ? (
+        {kind !== "overlay" ? (
           <>
             <Clipboard /> Paste
           </>

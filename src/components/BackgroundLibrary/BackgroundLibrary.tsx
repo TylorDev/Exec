@@ -9,6 +9,7 @@ import styles from "./BackgroundLibrary.module.scss";
 export function BackgroundLibrary() {
   const selectedBackgroundId = useEditorStore((state) => state.frame.selectedBackgroundId);
   const setFrame = useEditorStore((state) => state.setFrame);
+  const setBackgroundImage = useEditorStore((state) => state.setBackgroundImage);
 
   return (
     <ScrollPanel className={styles.library}>
@@ -19,7 +20,9 @@ export function BackgroundLibrary() {
             aria-label={`${category} backgrounds`}
             className={styles.grid}
             onValueChange={(value) => {
-              if (value) setFrame({ selectedBackgroundId: value, backgroundMode: "image" });
+              if (!value) return;
+              setFrame({ selectedBackgroundId: value, backgroundMode: "image" });
+              setBackgroundImage(null);
             }}
             type="single"
             value={selectedBackgroundId}
