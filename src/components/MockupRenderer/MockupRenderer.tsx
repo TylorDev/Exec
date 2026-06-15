@@ -31,7 +31,11 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
 
   if (mockup.hideImage) return null;
 
-  const radiusStyle = { borderRadius: `${mockup.borderRadius}px` };
+  const frameStyle = {
+    "--mockup-border-width": `${mockup.borderWidth}px`,
+    borderRadius: `${mockup.borderRadius}px`,
+  } as React.CSSProperties;
+  const imageStyle = { borderRadius: `${mockup.borderRadius}px` };
 
   if (!mockup.imageUrl) {
     return (
@@ -42,13 +46,13 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
     );
   }
 
-  const image = <img alt={mockup.imageName ?? "Uploaded mockup"} src={mockup.imageUrl} style={radiusStyle} />;
+  const image = <img alt={mockup.imageName ?? "Uploaded mockup"} src={mockup.imageUrl} style={imageStyle} />;
 
   const frameClasses = `${styles.mockup} ${styleClass[mockup.style]} ${shadowClass[mockup.shadow]} ${styles[variant]}`;
 
   if (mockup.mode === "browser") {
     return (
-      <div className={`${frameClasses} ${styles.browser}`} style={radiusStyle}>
+      <div className={`${frameClasses} ${styles.browser}`} style={frameStyle}>
         <div className={styles.blurLayer} />
         <div className={styles.stackLayer} />
         <div className={styles.content}>
@@ -65,7 +69,7 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
   }
 
   return (
-    <div className={`${frameClasses} ${styles.screenshot}`} style={radiusStyle}>
+    <div className={`${frameClasses} ${styles.screenshot}`} style={frameStyle}>
       <div className={styles.blurLayer} />
       <div className={styles.stackLayer} />
       <div className={styles.content}>{image}</div>

@@ -46,6 +46,7 @@ export interface MockupState {
   mode: MockupMode;
   style: MockupStyle;
   borderRadius: number;
+  borderWidth: number;
   shadow: ShadowLevel;
   hideImage: boolean;
 }

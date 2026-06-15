@@ -24,6 +24,7 @@ export function LeftPanel() {
   const setMockupMode = useEditorStore((state) => state.setMockupMode);
   const setMockupStyle = useEditorStore((state) => state.setMockupStyle);
   const setBorderRadius = useEditorStore((state) => state.setBorderRadius);
+  const setBorderWidth = useEditorStore((state) => state.setBorderWidth);
   const setShadow = useEditorStore((state) => state.setShadow);
   const setHideImage = useEditorStore((state) => state.setHideImage);
   const setFrame = useEditorStore((state) => state.setFrame);
@@ -57,6 +58,7 @@ export function LeftPanel() {
           <ControlGroup title="Style">
             <StylePicker onChange={setMockupStyle} value={mockup.style} />
             <SliderControl label="Border radius" max={64} min={0} onChange={setBorderRadius} suffix="px" value={mockup.borderRadius} />
+            <SliderControl label="Border thickness" max={40} min={0} onChange={setBorderWidth} suffix="px" value={mockup.borderWidth} />
             <SelectControl<ShadowLevel>
               label="Shadow"
               onChange={setShadow}

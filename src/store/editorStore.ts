@@ -22,6 +22,7 @@ const initialMockup: MockupState = {
   mode: "screenshot",
   style: "thick-blur-frame",
   borderRadius: 28,
+  borderWidth: 14,
   shadow: "medium",
   hideImage: false,
 };
@@ -73,6 +74,7 @@ interface EditorStore {
   setMockupMode: (mode: MockupMode) => void;
   setMockupStyle: (style: MockupState["style"]) => void;
   setBorderRadius: (borderRadius: number) => void;
+  setBorderWidth: (borderWidth: number) => void;
   setShadow: (shadow: ShadowLevel) => void;
   setHideImage: (hideImage: boolean) => void;
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
@@ -128,6 +130,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setMockupMode: (mode) => withHistory({ mockup: { ...get().mockup, mode } }),
     setMockupStyle: (style) => withHistory({ mockup: { ...get().mockup, style } }),
     setBorderRadius: (borderRadius) => withHistory({ mockup: { ...get().mockup, borderRadius } }),
+    setBorderWidth: (borderWidth) => withHistory({ mockup: { ...get().mockup, borderWidth } }),
     setShadow: (shadow) => withHistory({ mockup: { ...get().mockup, shadow } }),
     setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
