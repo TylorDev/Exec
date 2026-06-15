@@ -1,6 +1,12 @@
 .mockup {
   --mockup-border-width: 14px;
   --mockup-card-border-width: clamp(4px, calc(var(--mockup-border-width) * 0.5), 10px);
+  --mockup-shadow-blur: 80px;
+  --mockup-shadow-opacity: 0.38;
+  --mockup-shadow-spread: 0px;
+  --mockup-shadow-x: 0px;
+  --mockup-shadow-y: 32px;
+  box-shadow: var(--mockup-shadow-x) var(--mockup-shadow-y) var(--mockup-shadow-blur) var(--mockup-shadow-spread) rgba(0, 0, 0, var(--mockup-shadow-opacity));
   max-width: min(72%, 960px);
   position: relative;
   transform-style: preserve-3d;
@@ -212,18 +218,6 @@
   height: 5px;
   margin-left: 3px;
   padding: 0;
-}
-
-.soft {
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
-}
-
-.medium {
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.38);
-}
-
-.strong {
-  box-shadow: 0 44px 120px rgba(0, 0, 0, 0.55);
 }
 
 .empty {

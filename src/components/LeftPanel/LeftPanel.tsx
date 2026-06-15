@@ -7,6 +7,7 @@ import { Button } from "@/components/Button/Button";
 import { BackgroundLibrary } from "@/components/BackgroundLibrary/BackgroundLibrary";
 import { ControlGroup } from "@/components/ControlGroup/ControlGroup";
 import { Field } from "@/components/Field/Field";
+import { LightJoystick } from "@/components/LightJoystick/LightJoystick";
 import { MediaDropArea } from "@/components/MediaDropArea/MediaDropArea";
 import { PanelTabs } from "@/components/PanelTabs/PanelTabs";
 import { ScrollPanel } from "@/components/ScrollPanel/ScrollPanel";
@@ -26,6 +27,10 @@ export function LeftPanel() {
   const setBorderRadius = useEditorStore((state) => state.setBorderRadius);
   const setBorderWidth = useEditorStore((state) => state.setBorderWidth);
   const setShadow = useEditorStore((state) => state.setShadow);
+  const setShadowBlur = useEditorStore((state) => state.setShadowBlur);
+  const setShadowDirection = useEditorStore((state) => state.setShadowDirection);
+  const setShadowOpacity = useEditorStore((state) => state.setShadowOpacity);
+  const setShadowSpread = useEditorStore((state) => state.setShadowSpread);
   const setHideImage = useEditorStore((state) => state.setHideImage);
   const setFrame = useEditorStore((state) => state.setFrame);
   const setOverlay = useEditorStore((state) => state.setOverlay);
@@ -70,6 +75,10 @@ export function LeftPanel() {
               ]}
               value={mockup.shadow}
             />
+            <SliderControl label="Shadow opacity" max={100} min={0} onChange={setShadowOpacity} suffix="%" value={mockup.shadowOpacity} />
+            <SliderControl label="Shadow blur" max={120} min={0} onChange={setShadowBlur} suffix="px" value={mockup.shadowBlur} />
+            <SliderControl label="Shadow spread" max={40} min={-20} onChange={setShadowSpread} suffix="px" value={mockup.shadowSpread} />
+            <LightJoystick onChange={setShadowDirection} x={mockup.shadowX} y={mockup.shadowY} />
             <ToggleControl checked={mockup.hideImage} label="Hide image" onChange={setHideImage} />
           </ControlGroup>
         </ScrollPanel>

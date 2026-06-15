@@ -4,13 +4,6 @@ import { Monitor } from "lucide-react";
 import { useEditorStore } from "@/store/editorStore";
 import styles from "./MockupRenderer.module.scss";
 
-const shadowClass = {
-  none: "",
-  soft: styles.soft,
-  medium: styles.medium,
-  strong: styles.strong,
-};
-
 const styleClass = {
   bevel: styles.bevel,
   "liquid-glass": styles.liquidGlass,
@@ -33,6 +26,11 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
 
   const frameStyle = {
     "--mockup-border-width": `${mockup.borderWidth}px`,
+    "--mockup-shadow-blur": `${mockup.shadowBlur}px`,
+    "--mockup-shadow-opacity": `${mockup.shadow === "none" ? 0 : mockup.shadowOpacity / 100}`,
+    "--mockup-shadow-spread": `${mockup.shadowSpread}px`,
+    "--mockup-shadow-x": `${mockup.shadowX}px`,
+    "--mockup-shadow-y": `${mockup.shadowY}px`,
     borderRadius: `${mockup.borderRadius}px`,
   } as React.CSSProperties;
   const imageStyle = { borderRadius: `${mockup.borderRadius}px` };
@@ -48,7 +46,7 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
 
   const image = <img alt={mockup.imageName ?? "Uploaded mockup"} src={mockup.imageUrl} style={imageStyle} />;
 
-  const frameClasses = `${styles.mockup} ${styleClass[mockup.style]} ${shadowClass[mockup.shadow]} ${styles[variant]}`;
+  const frameClasses = `${styles.mockup} ${styleClass[mockup.style]} ${styles[variant]}`;
 
   if (mockup.mode === "browser") {
     return (

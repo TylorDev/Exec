@@ -24,6 +24,11 @@ const initialMockup: MockupState = {
   borderRadius: 28,
   borderWidth: 14,
   shadow: "medium",
+  shadowBlur: 80,
+  shadowOpacity: 38,
+  shadowSpread: 0,
+  shadowX: 0,
+  shadowY: 32,
   hideImage: false,
 };
 
@@ -62,6 +67,13 @@ const initialExport: ExportState = {
   isExporting: false,
 };
 
+const shadowPresets: Record<ShadowLevel, Pick<MockupState, "shadowBlur" | "shadowOpacity" | "shadowSpread">> = {
+  none: { shadowBlur: 0, shadowOpacity: 0, shadowSpread: 0 },
+  soft: { shadowBlur: 45, shadowOpacity: 24, shadowSpread: -4 },
+  medium: { shadowBlur: 80, shadowOpacity: 38, shadowSpread: 0 },
+  strong: { shadowBlur: 120, shadowOpacity: 56, shadowSpread: 8 },
+};
+
 interface EditorStore {
   mockup: MockupState;
   frame: FrameState;
@@ -76,6 +88,10 @@ interface EditorStore {
   setBorderRadius: (borderRadius: number) => void;
   setBorderWidth: (borderWidth: number) => void;
   setShadow: (shadow: ShadowLevel) => void;
+  setShadowBlur: (shadowBlur: number) => void;
+  setShadowDirection: (shadowX: number, shadowY: number) => void;
+  setShadowOpacity: (shadowOpacity: number) => void;
+  setShadowSpread: (shadowSpread: number) => void;
   setHideImage: (hideImage: boolean) => void;
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
   setHideUi: (hideUi: boolean) => void;
@@ -131,7 +147,11 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setMockupStyle: (style) => withHistory({ mockup: { ...get().mockup, style } }),
     setBorderRadius: (borderRadius) => withHistory({ mockup: { ...get().mockup, borderRadius } }),
     setBorderWidth: (borderWidth) => withHistory({ mockup: { ...get().mockup, borderWidth } }),
-    setShadow: (shadow) => withHistory({ mockup: { ...get().mockup, shadow } }),
+    setShadow: (shadow) => withHistory({ mockup: { ...get().mockup, shadow, ...shadowPresets[shadow] } }),
+    setShadowBlur: (shadowBlur) => withHistory({ mockup: { ...get().mockup, shadowBlur } }),
+    setShadowDirection: (shadowX, shadowY) => withHistory({ mockup: { ...get().mockup, shadowX, shadowY } }),
+    setShadowOpacity: (shadowOpacity) => withHistory({ mockup: { ...get().mockup, shadowOpacity } }),
+    setShadowSpread: (shadowSpread) => withHistory({ mockup: { ...get().mockup, shadowSpread } }),
     setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),

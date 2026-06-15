@@ -48,6 +48,11 @@ export interface MockupState {
   borderRadius: number;
   borderWidth: number;
   shadow: ShadowLevel;
+  shadowBlur: number;
+  shadowOpacity: number;
+  shadowSpread: number;
+  shadowX: number;
+  shadowY: number;
   hideImage: boolean;
 }
 
