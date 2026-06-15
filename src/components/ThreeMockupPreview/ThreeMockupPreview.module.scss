@@ -1,0 +1,23 @@
+.preview {
+  height: 100%;
+  min-height: 120px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.preview canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.scene {
+  min-height: 100%;
+}
+
+.card {
+  background:
+    radial-gradient(circle at 28% 24%, rgba(113, 230, 196, 0.14), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+}

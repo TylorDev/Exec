@@ -1,0 +1,50 @@
+.library {
+  max-height: 360px;
+  padding-right: 8px;
+}
+
+.library section + section {
+  margin-top: 14px;
+}
+
+.library h3 {
+  color: var(--color-text-soft);
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.item {
+  background: #0d0f16;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px;
+  text-align: left;
+}
+
+.item i {
+  border-radius: 6px;
+  height: 42px;
+}
+
+.item span {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item[data-state="on"] {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}

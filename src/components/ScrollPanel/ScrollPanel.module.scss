@@ -1,0 +1,28 @@
+.root {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.viewport {
+  height: 100%;
+  width: 100%;
+}
+
+.scrollbar {
+  background: transparent;
+  display: flex;
+  padding: 2px;
+  touch-action: none;
+  user-select: none;
+  width: 8px;
+}
+
+.thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  flex: 1;
+}
+
+.thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

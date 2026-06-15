@@ -1,0 +1,36 @@
+.row > div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.switch {
+  background: #0d0f16;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  height: 24px;
+  padding: 0;
+  position: relative;
+  transition: background 160ms ease, border-color 160ms ease;
+  width: 42px;
+}
+
+.switch[data-state="checked"] {
+  background: var(--color-accent-muted);
+  border-color: rgba(113, 230, 196, 0.45);
+}
+
+.thumb {
+  background: var(--color-text-muted);
+  border-radius: 50%;
+  display: block;
+  height: 16px;
+  transform: translateX(3px);
+  transition: background 160ms ease, transform 160ms ease;
+  width: 16px;
+}
+
+.switch[data-state="checked"] .thumb {
+  background: var(--color-accent);
+  transform: translateX(21px);
+}

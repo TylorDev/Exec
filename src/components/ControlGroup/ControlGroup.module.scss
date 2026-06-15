@@ -1,0 +1,23 @@
+.group {
+  border-top: 1px solid var(--color-border);
+  padding: 18px 0;
+}
+
+.group:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.group h2 {
+  color: var(--color-text-soft);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.content {
+  display: grid;
+  gap: 12px;
+}

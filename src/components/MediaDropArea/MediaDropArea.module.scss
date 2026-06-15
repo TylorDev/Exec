@@ -1,0 +1,52 @@
+.dropArea {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(113, 230, 196, 0.08), transparent),
+    #0d0f16;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+  min-height: 132px;
+  padding: 18px;
+  text-align: center;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.dropArea > svg {
+  color: var(--color-accent);
+  height: 24px;
+  width: 24px;
+}
+
+.dropArea strong {
+  color: var(--color-text);
+  font-size: 13px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.dropArea span {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dropArea span svg {
+  height: 13px;
+  width: 13px;
+}
+
+.dragging {
+  background:
+    linear-gradient(135deg, rgba(113, 230, 196, 0.16), transparent),
+    #10151d;
+  border-color: var(--color-accent);
+}
