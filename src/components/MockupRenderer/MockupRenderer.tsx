@@ -11,7 +11,11 @@ const shadowClass = {
   strong: styles.strong,
 };
 
-export function MockupRenderer() {
+interface MockupRendererProps {
+  variant?: "scene" | "card";
+}
+
+export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
   const mockup = useEditorStore((state) => state.mockup);
 
   if (mockup.hideImage) return null;
@@ -20,7 +24,7 @@ export function MockupRenderer() {
 
   if (!mockup.imageUrl) {
     return (
-      <div className={styles.empty}>
+      <div className={`${styles.empty} ${styles[variant]}`}>
         <Monitor />
         <span>Upload a screenshot</span>
       </div>
@@ -31,21 +35,25 @@ export function MockupRenderer() {
 
   if (mockup.mode === "browser") {
     return (
-      <div className={`${styles.browser} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]}`} style={radiusStyle}>
-        <div className={styles.browserBar}>
-          <i />
-          <i />
-          <i />
-          <span>exec.local</span>
+      <div className={`${styles.mockup} ${styles.browser} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]} ${styles[variant]}`} style={radiusStyle}>
+        <div className={styles.blurLayer} />
+        <div className={styles.content}>
+          <div className={styles.browserBar}>
+            <i />
+            <i />
+            <i />
+            <span>exec.local</span>
+          </div>
+          {image}
         </div>
-        {image}
       </div>
     );
   }
 
   return (
-    <div className={`${styles.screenshot} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]}`} style={radiusStyle}>
-      {image}
+    <div className={`${styles.mockup} ${styles.screenshot} ${styles.thickBlurFrame} ${shadowClass[mockup.shadow]} ${styles[variant]}`} style={radiusStyle}>
+      <div className={styles.blurLayer} />
+      <div className={styles.content}>{image}</div>
     </div>
   );
 }

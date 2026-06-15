@@ -3,10 +3,10 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import { ControlGroup } from "@/components/ControlGroup/ControlGroup";
+import { CssMockupPreview } from "@/components/CssMockupPreview/CssMockupPreview";
 import { ScrollPanel } from "@/components/ScrollPanel/ScrollPanel";
 import { SelectControl } from "@/components/SelectControl/SelectControl";
 import { SliderControl } from "@/components/SliderControl/SliderControl";
-import { ThreeMockupPreview } from "@/components/ThreeMockupPreview/ThreeMockupPreview";
 import { CAMERA_PRESETS, getActiveCameraPreset } from "@/data/cameraPresets";
 import { useEditorStore } from "@/store/editorStore";
 import { exportScene } from "@/utils/exportScene";
@@ -21,7 +21,6 @@ interface RightPanelProps {
 export function RightPanel({ sceneRef }: RightPanelProps) {
   const frame = useEditorStore((state) => state.frame);
   const camera = useEditorStore((state) => state.camera);
-  const mockup = useEditorStore((state) => state.mockup);
   const exportSettings = useEditorStore((state) => state.exportSettings);
   const setCamera = useEditorStore((state) => state.setCamera);
   const applyCameraPreset = useEditorStore((state) => state.applyCameraPreset);
@@ -105,15 +104,7 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
                 type="button"
               >
                 <span className={styles.presetPreview}>
-                  <ThreeMockupPreview
-                    borderRadius={mockup.borderRadius}
-                    camera={preset.camera}
-                    imageName={mockup.imageName}
-                    imageUrl={mockup.imageUrl}
-                    mode={mockup.mode}
-                    shadow={mockup.shadow}
-                    variant="card"
-                  />
+                  <CssMockupPreview camera={preset.camera} variant="card" />
                 </span>
                 <span className={styles.presetMeta}>
                   <strong>{preset.label}</strong>

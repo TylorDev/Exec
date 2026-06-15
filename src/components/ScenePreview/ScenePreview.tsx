@@ -1,8 +1,8 @@
 "use client";
 
 import { Eye, EyeOff, Redo2, Undo2 } from "lucide-react";
+import { CssMockupPreview } from "@/components/CssMockupPreview/CssMockupPreview";
 import { IconButton } from "@/components/IconButton/IconButton";
-import { ThreeMockupPreview } from "@/components/ThreeMockupPreview/ThreeMockupPreview";
 import { useEditorStore } from "@/store/editorStore";
 import { getBackgroundCss, getSceneResolution } from "@/utils/scene";
 import styles from "./ScenePreview.module.scss";
@@ -45,19 +45,9 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
           <div className={styles.backgroundEffects} style={{ backdropFilter: `blur(${frame.blur}px)` }} />
           {frame.noise > 0 ? <div className={styles.noise} style={{ opacity: frame.noise / 100 }} /> : null}
           {frame.overlayUrl ? <img alt="" className={styles.overlay} src={frame.overlayUrl} style={{ opacity: frame.overlayOpacity / 100 }} /> : null}
-          <div
-            className={styles.camera}
-          >
+          <div className={styles.camera}>
             {mockup.hideImage ? null : (
-              <ThreeMockupPreview
-                borderRadius={mockup.borderRadius}
-                camera={camera}
-                imageName={mockup.imageName}
-                imageUrl={mockup.imageUrl}
-                mode={mockup.mode}
-                shadow={mockup.shadow}
-                variant="scene"
-              />
+              <CssMockupPreview camera={camera} variant="scene" />
             )}
           </div>
         </div>
