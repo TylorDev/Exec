@@ -7,13 +7,13 @@
   --mockup-shadow-x: 0px;
   --mockup-shadow-y: 32px;
   box-shadow: var(--mockup-shadow-x) var(--mockup-shadow-y) var(--mockup-shadow-blur) var(--mockup-shadow-spread) rgba(0, 0, 0, var(--mockup-shadow-opacity));
-  max-width: min(72%, 960px);
+  max-width: var(--scene-mockup-width, min(72%, 960px));
   position: relative;
   transform-style: preserve-3d;
 }
 
 .scene {
-  max-width: min(72%, 960px);
+  max-width: var(--scene-mockup-width, min(72%, 960px));
 }
 
 .card {
@@ -151,7 +151,7 @@
 .browser img {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
   height: auto;
-  max-height: 62vh;
+  max-height: var(--scene-mockup-image-max-height, none);
   object-fit: contain;
   width: 100%;
 }

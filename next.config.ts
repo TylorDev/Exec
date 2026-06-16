@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    turbopackFileSystemCacheForDev: true,
   },
 };
 

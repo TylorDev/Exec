@@ -73,11 +73,13 @@ const validateExportImages = async (node: HTMLElement) => {
           await image.decode();
         }
       } catch (error) {
-        throw wrapExportError(`Image load failed: ${name}`, error);
+        const detail = image.src.startsWith("blob:") ? " The local blob URL may be unreadable or revoked." : "";
+        throw wrapExportError(`Image load failed: ${name}.${detail}`, error);
       }
 
       if (!image.complete || image.naturalWidth === 0) {
-        throw new Error(`Image load failed: ${name}. The image is incomplete or has no readable dimensions.`);
+        const detail = image.src.startsWith("blob:") ? " The local blob URL may be unreadable or revoked." : "";
+        throw new Error(`Image load failed: ${name}. The image is incomplete or has no readable dimensions.${detail}`);
       }
     }),
   );
@@ -163,7 +165,7 @@ export async function exportScene({ node, width, height, format, quality, transp
   try {
     await validateExportImages(node);
     canvas = await toCanvas(node, {
-      cacheBust: true,
+      cacheBust: false,
       pixelRatio: 1,
       width,
       height,
@@ -171,9 +173,13 @@ export async function exportScene({ node, width, height, format, quality, transp
       canvasHeight: height,
       backgroundColor: transparent ? undefined : undefined,
       style: {
-        width: `${width}px`,
         height: `${height}px`,
+        maxHeight: `${height}px`,
+        maxWidth: `${width}px`,
+        minHeight: `${height}px`,
+        minWidth: `${width}px`,
         transform: "none",
+        width: `${width}px`,
       },
     });
   } catch (error) {

@@ -37,10 +37,12 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
           className={styles.scene}
           ref={sceneRef}
           style={{
+            "--scene-mockup-image-max-height": "none",
+            "--scene-mockup-width": "min(72%, 960px)",
             aspectRatio: `${resolution.width} / ${resolution.height}`,
             background,
             maxWidth: ratio >= 1 ? "min(100%, 980px)" : "min(72vh, 560px)",
-          }}
+          } as React.CSSProperties}
         >
           <div className={styles.backgroundEffects} style={{ backdropFilter: `blur(${frame.blur}px)` }} />
           {frame.noise > 0 ? <div className={styles.noise} style={{ opacity: frame.noise / 100 }} /> : null}
