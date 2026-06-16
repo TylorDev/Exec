@@ -65,6 +65,8 @@ export interface MockupState {
   glassSpecular: number;
   glassBlur: number;
   glassColor: string;
+  glassHighlightsEnabled: boolean;
+  glassLightColor: string;
   hideImage: boolean;
 }
 

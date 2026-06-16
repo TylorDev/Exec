@@ -30,6 +30,7 @@ const BASE_FORMAT_OPTIONS: Array<{ label: string; value: ExportFormat }> = [
 export function RightPanel({ sceneRef }: RightPanelProps) {
   const frame = useEditorStore((state) => state.frame);
   const camera = useEditorStore((state) => state.camera);
+  const mockup = useEditorStore((state) => state.mockup);
   const exportSettings = useEditorStore((state) => state.exportSettings);
   const setCamera = useEditorStore((state) => state.setCamera);
   const applyCameraPreset = useEditorStore((state) => state.applyCameraPreset);
@@ -96,13 +97,21 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
     }
     setExportStatus({ error: null, isExporting: true });
     try {
+      const previewWidth = sceneRef.current.getBoundingClientRect().width || resolution.width;
       await exportScene({
-        node: sceneRef.current,
-        width: resolution.width,
-        height: resolution.height,
         format: exportSettings.format,
+        height: resolution.height,
+        previewWidth,
         quality: exportSettings.quality,
+        snapshot: {
+          camera,
+          exportSettings,
+          frame,
+          mockup,
+          ui: useEditorStore.getState().ui,
+        },
         transparent: frame.backgroundMode === "transparent",
+        width: resolution.width,
       });
       setExportStatus({ error: null, isExporting: false });
     } catch (error) {

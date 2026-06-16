@@ -1,16 +1,28 @@
 .mockup {
-  --mockup-border-width: 14px;
-  --mockup-card-border-width: clamp(4px, calc(var(--mockup-border-width) * 0.5), 10px);
-  --mockup-shadow-blur: 80px;
+  --glass-blur-base: 8px;
+  --glass-blur: calc(var(--glass-blur-base) * var(--scene-export-scale, 1));
+  --mockup-border-radius-base: 28px;
+  --mockup-border-radius: calc(var(--mockup-border-radius-base) * var(--scene-export-scale, 1));
+  --mockup-border-width-base: 14px;
+  --mockup-border-width: calc(var(--mockup-border-width-base) * var(--scene-export-scale, 1));
+  --mockup-card-border-width: clamp(calc(4px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) * 0.5), calc(10px * var(--scene-export-scale, 1)));
+  --mockup-shadow-blur-base: 80px;
+  --mockup-shadow-blur: calc(var(--mockup-shadow-blur-base) * var(--scene-export-scale, 1));
   --mockup-shadow-opacity: 0.38;
-  --mockup-shadow-spread: 0px;
-  --mockup-shadow-x: 0px;
-  --mockup-shadow-y: 32px;
-  --glass-blur: 8px;
+  --mockup-shadow-spread-base: 0px;
+  --mockup-shadow-spread: calc(var(--mockup-shadow-spread-base) * var(--scene-export-scale, 1));
+  --mockup-shadow-x-base: 0px;
+  --mockup-shadow-x: calc(var(--mockup-shadow-x-base) * var(--scene-export-scale, 1));
+  --mockup-shadow-y-base: 32px;
+  --mockup-shadow-y: calc(var(--mockup-shadow-y-base) * var(--scene-export-scale, 1));
   --glass-color: #89f7dc;
   --glass-color-rgb: 137, 247, 220;
+  --glass-highlight-opacity: 1;
+  --glass-light-color: #ffffff;
+  --glass-light-rgb: 255, 255, 255;
   --liquid-glass-filter: none;
   box-shadow: var(--mockup-shadow-x) var(--mockup-shadow-y) var(--mockup-shadow-blur) var(--mockup-shadow-spread) rgba(0, 0, 0, var(--mockup-shadow-opacity));
+  border-radius: var(--mockup-border-radius);
   max-width: var(--scene-mockup-width, min(72%, 960px));
   position: relative;
   transform-style: preserve-3d;
@@ -52,7 +64,7 @@
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06)),
     rgba(255, 255, 255, 0.12);
-  border: clamp(1px, calc(var(--mockup-border-width) / 10), 4px) solid rgba(255, 255, 255, 0.24);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 10), calc(4px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.24);
   border-radius: inherit;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   inset: 0;
@@ -83,7 +95,7 @@
 .bevel .blurLayer {
   backdrop-filter: none;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(11, 13, 19, 0.56));
-  border: clamp(1px, calc(var(--mockup-border-width) / 8), 5px) solid rgba(255, 255, 255, 0.22);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 8), calc(5px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.22);
   box-shadow:
     inset 10px 10px 18px rgba(255, 255, 255, 0.12),
     inset -12px -12px 22px rgba(0, 0, 0, 0.48);
@@ -95,22 +107,22 @@
     radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.45), transparent 28%),
     linear-gradient(135deg, rgba(113, 230, 196, 0.22), rgba(255, 255, 255, 0.08) 44%, rgba(70, 116, 255, 0.15)),
     rgba(255, 255, 255, 0.1);
-  border: clamp(1px, calc(var(--mockup-border-width) / 7), 5px) solid rgba(203, 255, 238, 0.48);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 7), calc(5px * var(--scene-export-scale, 1))) solid rgba(203, 255, 238, 0.48);
 }
 
 .trueLiquidGlassHeavy .blurLayer {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.9) contrast(1.08);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.9) contrast(1.08);
   background:
-    radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.72), transparent 22%),
+    radial-gradient(circle at 14% 10%, rgba(var(--glass-light-rgb), calc(var(--glass-highlight-opacity) * 0.72)), transparent 22%),
     radial-gradient(circle at 88% 92%, rgba(var(--glass-color-rgb), 0.32), transparent 30%),
-    linear-gradient(132deg, rgba(255, 255, 255, 0.28), rgba(var(--glass-color-rgb), 0.14) 34%, rgba(var(--glass-color-rgb), 0.2) 70%, rgba(255, 255, 255, 0.2)),
+    linear-gradient(132deg, rgba(var(--glass-light-rgb), calc(var(--glass-highlight-opacity) * 0.28)), rgba(var(--glass-color-rgb), 0.14) 34%, rgba(var(--glass-color-rgb), 0.2) 70%, rgba(var(--glass-light-rgb), calc(var(--glass-highlight-opacity) * 0.2))),
     rgba(var(--glass-color-rgb), 0.08);
-  border: clamp(2px, calc(var(--mockup-border-width) / 5), 9px) solid rgba(var(--glass-color-rgb), 0.64);
+  border: clamp(calc(2px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 5), calc(9px * var(--scene-export-scale, 1))) solid rgba(var(--glass-color-rgb), 0.64);
   box-shadow:
     0 28px 70px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.46),
-    inset 12px 16px 28px rgba(255, 255, 255, 0.2),
+    inset 0 0 0 1px rgba(var(--glass-light-rgb), calc(var(--glass-highlight-opacity) * 0.46)),
+    inset 12px 16px 28px rgba(var(--glass-light-rgb), calc(var(--glass-highlight-opacity) * 0.2)),
     inset -18px -22px 38px rgba(15, 21, 39, 0.44);
 }
 
@@ -125,21 +137,21 @@
 
 .trueLiquidGlassHeavy .blurLayer::before {
   background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0.72), transparent 18% 74%, rgba(255, 255, 255, 0.42)),
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.52), transparent 24%),
+    linear-gradient(118deg, rgba(var(--glass-light-rgb), 0.72), transparent 18% 74%, rgba(var(--glass-light-rgb), 0.42)),
+    radial-gradient(circle at 18% 18%, rgba(var(--glass-light-rgb), 0.52), transparent 24%),
     radial-gradient(circle at 78% 22%, rgba(var(--glass-color-rgb), 0.34), transparent 32%);
   mix-blend-mode: screen;
-  opacity: 0.62;
+  opacity: calc(var(--glass-highlight-opacity) * 0.62);
 }
 
 .trueLiquidGlassHeavy .blurLayer::after {
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.5), transparent 12% 88%, rgba(255, 255, 255, 0.34)),
-    linear-gradient(0deg, rgba(255, 255, 255, 0.42), transparent 16% 84%, rgba(9, 12, 22, 0.28));
+    linear-gradient(90deg, rgba(var(--glass-light-rgb), 0.5), transparent 12% 88%, rgba(var(--glass-light-rgb), 0.34)),
+    linear-gradient(0deg, rgba(var(--glass-light-rgb), 0.42), transparent 16% 84%, rgba(9, 12, 22, 0.28));
   box-shadow:
-    inset 0 0 34px rgba(255, 255, 255, 0.2),
+    inset 0 0 34px rgba(var(--glass-light-rgb), 0.2),
     inset 0 0 74px rgba(var(--glass-color-rgb), 0.18);
-  opacity: 0.86;
+  opacity: calc(var(--glass-highlight-opacity) * 0.86);
 }
 
 @supports ((backdrop-filter: url("#true-liquid-glass-test")) or (-webkit-backdrop-filter: url("#true-liquid-glass-test"))) {
@@ -152,29 +164,29 @@
 .solidBorder .blurLayer {
   backdrop-filter: none;
   background: #10131b;
-  border: clamp(1px, calc(var(--mockup-border-width) / 4), 10px) solid rgba(255, 255, 255, 0.72);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 4), calc(10px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.72);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .outline {
-  padding: clamp(4px, calc(var(--mockup-border-width) * 0.55), 18px);
+  padding: clamp(calc(4px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) * 0.55), calc(18px * var(--scene-export-scale, 1)));
 }
 
 .card.outline {
-  padding: clamp(3px, calc(var(--mockup-card-border-width) * 0.75), 7px);
+  padding: clamp(calc(3px * var(--scene-export-scale, 1)), calc(var(--mockup-card-border-width) * 0.75), calc(7px * var(--scene-export-scale, 1)));
 }
 
 .outline .blurLayer {
   backdrop-filter: none;
   background: transparent;
-  border: clamp(1px, calc(var(--mockup-border-width) / 8), 4px) solid rgba(255, 255, 255, 0.86);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 8), calc(4px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.86);
   box-shadow: none;
 }
 
 .softGlow .blurLayer {
   backdrop-filter: blur(18px);
   background: rgba(255, 255, 255, 0.08);
-  border: clamp(1px, calc(var(--mockup-border-width) / 9), 5px) solid rgba(113, 230, 196, 0.32);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 9), calc(5px * var(--scene-export-scale, 1))) solid rgba(113, 230, 196, 0.32);
   box-shadow:
     0 0 34px rgba(113, 230, 196, 0.38),
     inset 0 0 0 1px rgba(255, 255, 255, 0.12);
@@ -183,13 +195,13 @@
 .stack .blurLayer {
   backdrop-filter: blur(18px);
   background: rgba(255, 255, 255, 0.11);
-  border: clamp(1px, calc(var(--mockup-border-width) / 10), 4px) solid rgba(255, 255, 255, 0.18);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 10), calc(4px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.18);
 }
 
 .stack .stackLayer,
 .stack .stackLayer::before {
   background: rgba(255, 255, 255, 0.12);
-  border: clamp(1px, calc(var(--mockup-border-width) / 12), 3px) solid rgba(255, 255, 255, 0.16);
+  border: clamp(calc(1px * var(--scene-export-scale, 1)), calc(var(--mockup-border-width) / 12), calc(3px * var(--scene-export-scale, 1))) solid rgba(255, 255, 255, 0.16);
   border-radius: inherit;
   display: block;
   inset: 0;

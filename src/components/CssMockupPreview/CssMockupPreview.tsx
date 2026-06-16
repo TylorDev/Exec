@@ -14,7 +14,7 @@ export function CssMockupPreview({ camera, className = "", variant = "scene" }: 
   return (
     <div
       className={`${styles.preview} ${styles[variant]} ${className}`}
-      style={{ perspective: `${camera.perspective * 18}px` }}
+      style={{ "--camera-perspective-base": `${camera.perspective * 18}px` } as React.CSSProperties}
     >
       <div
         className={styles.transform}

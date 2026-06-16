@@ -35,6 +35,8 @@ const initialMockup: MockupState = {
   glassSpecular: 55,
   glassBlur: 8,
   glassColor: "#89f7dc",
+  glassHighlightsEnabled: true,
+  glassLightColor: "#ffffff",
   hideImage: false,
 };
 
@@ -106,6 +108,8 @@ interface EditorStore {
   setGlassSpecular: (glassSpecular: number) => void;
   setGlassBlur: (glassBlur: number) => void;
   setGlassColor: (glassColor: string) => void;
+  setGlassHighlightsEnabled: (glassHighlightsEnabled: boolean) => void;
+  setGlassLightColor: (glassLightColor: string) => void;
   setHideImage: (hideImage: boolean) => void;
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
   setHideUi: (hideUi: boolean) => void;
@@ -215,6 +219,8 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setGlassSpecular: (glassSpecular) => withHistory({ mockup: { ...get().mockup, glassSpecular } }),
     setGlassBlur: (glassBlur) => withHistory({ mockup: { ...get().mockup, glassBlur } }),
     setGlassColor: (glassColor) => withHistory({ mockup: { ...get().mockup, glassColor } }),
+    setGlassHighlightsEnabled: (glassHighlightsEnabled) => withHistory({ mockup: { ...get().mockup, glassHighlightsEnabled } }),
+    setGlassLightColor: (glassLightColor) => withHistory({ mockup: { ...get().mockup, glassLightColor } }),
     setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),

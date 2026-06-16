@@ -1,9 +1,11 @@
 .preview {
+  --camera-perspective-base: 756px;
   align-items: center;
   display: flex;
   height: 100%;
   justify-content: center;
   overflow: visible;
+  perspective: calc(var(--camera-perspective-base) * var(--scene-export-scale, 1));
   transform-style: preserve-3d;
   width: 100%;
 }

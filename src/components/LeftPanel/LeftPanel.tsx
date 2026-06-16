@@ -34,6 +34,8 @@ export function LeftPanel() {
   const setShadowSpread = useEditorStore((state) => state.setShadowSpread);
   const setGlassBlur = useEditorStore((state) => state.setGlassBlur);
   const setGlassColor = useEditorStore((state) => state.setGlassColor);
+  const setGlassHighlightsEnabled = useEditorStore((state) => state.setGlassHighlightsEnabled);
+  const setGlassLightColor = useEditorStore((state) => state.setGlassLightColor);
   const setGlassRefraction = useEditorStore((state) => state.setGlassRefraction);
   const setGlassSpecular = useEditorStore((state) => state.setGlassSpecular);
   const setGlassThickness = useEditorStore((state) => state.setGlassThickness);
@@ -79,6 +81,17 @@ export function LeftPanel() {
                 <div className={styles.colorInput}>
                   <Field label="Glass color">
                     <input onChange={(event) => setGlassColor(event.target.value)} type="color" value={mockup.glassColor} />
+                  </Field>
+                </div>
+                <ToggleControl checked={mockup.glassHighlightsEnabled} label="Glass reflections" onChange={setGlassHighlightsEnabled} />
+                <div className={styles.colorInput}>
+                  <Field label="Reflection color">
+                    <input
+                      disabled={!mockup.glassHighlightsEnabled}
+                      onChange={(event) => setGlassLightColor(event.target.value)}
+                      type="color"
+                      value={mockup.glassLightColor}
+                    />
                   </Field>
                 </div>
               </>

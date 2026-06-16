@@ -7,6 +7,8 @@ export interface LiquidGlassMapOptions {
   glassThickness: number;
   glassSpecular: number;
   glassColor: string;
+  glassHighlightsEnabled: boolean;
+  glassLightColor: string;
 }
 
 export interface LiquidGlassMaps {
@@ -149,6 +151,8 @@ const makeCacheKey = (options: LiquidGlassMapOptions, width: number, height: num
     Math.round(options.glassThickness),
     Math.round(options.glassSpecular),
     options.glassColor.toLowerCase(),
+    options.glassHighlightsEnabled ? "lights-on" : "lights-off",
+    options.glassLightColor.toLowerCase(),
   ].join(":");
 
 export function createLiquidGlassMaps(options: LiquidGlassMapOptions): LiquidGlassMaps {
@@ -175,7 +179,7 @@ export function createLiquidGlassMaps(options: LiquidGlassMapOptions): LiquidGla
 
   const displacementImage = displacementContext.createImageData(mapWidth, mapHeight);
   const specularImage = specularContext.createImageData(mapWidth, mapHeight);
-  const glassColor = mixWithWhite(parseHexColor(options.glassColor), 0.42);
+  const glassColor = mixWithWhite(parseHexColor(options.glassLightColor), 0.42);
   const specularAngle = (-60 * Math.PI) / 180;
   const lightX = Math.cos(specularAngle);
   const lightY = Math.sin(specularAngle);
@@ -200,7 +204,9 @@ export function createLiquidGlassMaps(options: LiquidGlassMapOptions): LiquidGla
       const lightAlignment = clamp(field.normalX * lightX + field.normalY * lightY, 0, 1);
       const rim = inBezel ? Math.pow(1 - distanceRatio, 0.45) : 0;
       const slope = clamp(sample.normalSlope / 6, 0, 1);
-      const alpha = Math.round(255 * (options.glassSpecular / 100) * rim * (0.2 + lightAlignment * 0.8) * (0.45 + slope * 0.55));
+      const alpha = options.glassHighlightsEnabled
+        ? Math.round(255 * (options.glassSpecular / 100) * rim * (0.2 + lightAlignment * 0.8) * (0.45 + slope * 0.55))
+        : 0;
 
       specularImage.data[index] = glassColor.red;
       specularImage.data[index + 1] = glassColor.green;

@@ -22,7 +22,7 @@ interface MockupRendererProps {
   variant?: "scene" | "card";
 }
 
-const hexToRgb = (hexColor: string) => {
+const hexToRgb = (hexColor: string, fallback = { red: 137, green: 247, blue: 220 }) => {
   const normalized = hexColor.replace("#", "").trim();
   const value =
     normalized.length === 3
@@ -32,7 +32,7 @@ const hexToRgb = (hexColor: string) => {
           .join("")
       : normalized;
 
-  if (!/^[0-9a-fA-F]{6}$/.test(value)) return { red: 137, green: 247, blue: 220 };
+  if (!/^[0-9a-fA-F]{6}$/.test(value)) return fallback;
 
   return {
     red: Number.parseInt(value.slice(0, 2), 16),
@@ -74,6 +74,8 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
             glassThickness: mockup.glassThickness,
             glassSpecular: mockup.glassSpecular,
             glassColor: mockup.glassColor,
+            glassHighlightsEnabled: mockup.glassHighlightsEnabled,
+            glassLightColor: mockup.glassLightColor,
           }),
         );
       });
@@ -96,26 +98,43 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
     mockup.glassSpecular,
     mockup.glassThickness,
     mockup.glassColor,
+    mockup.glassHighlightsEnabled,
+    mockup.glassLightColor,
     mockup.imageUrl,
   ]);
 
   if (mockup.hideImage) return null;
 
   const glassColor = hexToRgb(mockup.glassColor);
+  const glassLightColor = hexToRgb(mockup.glassLightColor, { red: 255, green: 255, blue: 255 });
   const frameStyle = {
-    "--glass-blur": `${mockup.glassBlur}px`,
+    "--glass-blur-base": `${mockup.glassBlur}px`,
     "--glass-color": mockup.glassColor,
     "--glass-color-rgb": `${glassColor.red}, ${glassColor.green}, ${glassColor.blue}`,
+    "--glass-highlight-opacity": mockup.glassHighlightsEnabled ? 1 : 0,
+    "--glass-light-color": mockup.glassLightColor,
+    "--glass-light-rgb": `${glassLightColor.red}, ${glassLightColor.green}, ${glassLightColor.blue}`,
     "--liquid-glass-filter": maps ? `url("#${filterId}")` : "none",
-    "--mockup-border-width": `${mockup.borderWidth}px`,
-    "--mockup-shadow-blur": `${mockup.shadowBlur}px`,
+    "--mockup-border-radius-base": `${mockup.borderRadius}px`,
+    "--mockup-border-width-base": `${mockup.borderWidth}px`,
+    "--mockup-shadow-blur-base": `${mockup.shadowBlur}px`,
     "--mockup-shadow-opacity": `${mockup.shadow === "none" ? 0 : mockup.shadowOpacity / 100}`,
-    "--mockup-shadow-spread": `${mockup.shadowSpread}px`,
-    "--mockup-shadow-x": `${mockup.shadowX}px`,
-    "--mockup-shadow-y": `${mockup.shadowY}px`,
-    borderRadius: `${mockup.borderRadius}px`,
+    "--mockup-shadow-spread-base": `${mockup.shadowSpread}px`,
+    "--mockup-shadow-x-base": `${mockup.shadowX}px`,
+    "--mockup-shadow-y-base": `${mockup.shadowY}px`,
   } as React.CSSProperties;
-  const imageStyle = { borderRadius: `${mockup.borderRadius}px` };
+  const imageStyle = { borderRadius: "var(--mockup-border-radius)" };
+  const liquidGlassData = isTrueLiquidGlass
+    ? {
+        "data-glass-color": mockup.glassColor,
+        "data-glass-highlights-enabled": String(mockup.glassHighlightsEnabled),
+        "data-glass-light-color": mockup.glassLightColor,
+        "data-glass-refraction": mockup.glassRefraction,
+        "data-glass-specular": mockup.glassSpecular,
+        "data-glass-thickness": mockup.glassThickness,
+        "data-liquid-glass-map": "true",
+      }
+    : {};
 
   if (!mockup.imageUrl) {
     return (
@@ -174,12 +193,12 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
 
   if (mockup.mode === "browser") {
     return (
-      <div className={`${frameClasses} ${styles.browser}`} ref={frameRef} style={frameStyle}>
+      <div className={`${frameClasses} ${styles.browser}`} ref={frameRef} style={frameStyle} {...liquidGlassData}>
         {filterSvg}
-        <div className={styles.blurLayer} />
+        <div className={styles.blurLayer} data-liquid-glass-blur-layer={isTrueLiquidGlass ? "true" : undefined} />
         <div className={styles.stackLayer} />
         <div className={styles.content}>
-          <div className={styles.browserBar}>
+          <div className={styles.browserBar} data-browser-bar="true">
             <i />
             <i />
             <i />
@@ -192,9 +211,9 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
   }
 
   return (
-    <div className={`${frameClasses} ${styles.screenshot}`} ref={frameRef} style={frameStyle}>
+    <div className={`${frameClasses} ${styles.screenshot}`} ref={frameRef} style={frameStyle} {...liquidGlassData}>
       {filterSvg}
-      <div className={styles.blurLayer} />
+      <div className={styles.blurLayer} data-liquid-glass-blur-layer={isTrueLiquidGlass ? "true" : undefined} />
       <div className={styles.stackLayer} />
       <div className={styles.content}>{image}</div>
     </div>
