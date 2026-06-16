@@ -44,7 +44,7 @@ export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
     );
   }
 
-  const image = <img alt={mockup.imageName ?? "Uploaded mockup"} src={mockup.imageUrl} style={imageStyle} />;
+  const image = <img alt={mockup.imageName ?? "Uploaded mockup"} data-export-image="mockup" src={mockup.imageUrl} style={imageStyle} />;
 
   const frameClasses = `${styles.mockup} ${styleClass[mockup.style]} ${styles[variant]}`;
 

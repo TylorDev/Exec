@@ -57,6 +57,11 @@
   color: var(--color-text);
 }
 
+.item[data-disabled] {
+  color: var(--color-disabled);
+  cursor: not-allowed;
+}
+
 .indicator {
   align-items: center;
   color: var(--color-accent);

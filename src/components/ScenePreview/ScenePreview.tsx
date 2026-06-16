@@ -44,7 +44,7 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
         >
           <div className={styles.backgroundEffects} style={{ backdropFilter: `blur(${frame.blur}px)` }} />
           {frame.noise > 0 ? <div className={styles.noise} style={{ opacity: frame.noise / 100 }} /> : null}
-          {frame.overlayUrl ? <img alt="" className={styles.overlay} src={frame.overlayUrl} style={{ opacity: frame.overlayOpacity / 100 }} /> : null}
+          {frame.overlayUrl ? <img alt="" className={styles.overlay} data-export-image="overlay" src={frame.overlayUrl} style={{ opacity: frame.overlayOpacity / 100 }} /> : null}
           <div className={styles.camera}>
             {mockup.hideImage ? null : (
               <CssMockupPreview camera={camera} variant="scene" />

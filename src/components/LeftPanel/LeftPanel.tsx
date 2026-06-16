@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { BACKGROUNDS } from "@/data/backgrounds";
 import { RESOLUTIONS } from "@/data/resolutions";
 import { Button } from "@/components/Button/Button";
+import { BackgroundImagePicker } from "@/components/BackgroundImagePicker/BackgroundImagePicker";
 import { BackgroundLibrary } from "@/components/BackgroundLibrary/BackgroundLibrary";
 import { ControlGroup } from "@/components/ControlGroup/ControlGroup";
 import { Field } from "@/components/Field/Field";
@@ -138,7 +139,12 @@ export function LeftPanel() {
                 </Field>
               </div>
             ) : null}
-            {frame.backgroundMode === "image" ? <MediaDropArea kind="background" /> : null}
+            {frame.backgroundMode === "image" ? (
+              <>
+                <BackgroundImagePicker />
+                <MediaDropArea kind="background" />
+              </>
+            ) : null}
           </ControlGroup>
           <ControlGroup title="Background library">
             <BackgroundLibrary />

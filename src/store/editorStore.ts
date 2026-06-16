@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { BACKGROUNDS } from "@/data/backgrounds";
 import { CAMERA_PRESET_MAP } from "@/data/cameraPresets";
 import type {
+  BackgroundImage,
   CameraPreset,
   CameraState,
   EditorSnapshot,
@@ -39,6 +40,7 @@ const initialFrame: FrameState = {
   backgroundMode: "image",
   backgroundImageUrl: null,
   backgroundImageName: null,
+  backgroundImages: [],
   solidColor: "#11131b",
   selectedBackgroundId: BACKGROUNDS[2].id,
   blur: 0,
@@ -98,7 +100,11 @@ interface EditorStore {
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
   setHideUi: (hideUi: boolean) => void;
   setFrame: (frame: Partial<FrameState>) => void;
+  addBackgroundImages: (files: File[]) => void;
+  randomizeBackground: () => void;
   setBackgroundImage: (url: string | null, name?: string) => void;
+  selectBackgroundImage: (id: string) => void;
+  selectBackgroundPreset: (id: string) => void;
   setOverlay: (url: string | null) => void;
   setCamera: (camera: Partial<CameraState>) => void;
   applyCameraPreset: (preset: CameraPreset) => void;
@@ -123,14 +129,55 @@ const revokeObjectUrl = (url: string | null) => {
   }
 };
 
+const addObjectUrl = (urls: Set<string>, url: string | null) => {
+  if (url?.startsWith("blob:")) urls.add(url);
+};
+
+const collectSnapshotObjectUrls = (snapshot: Pick<EditorSnapshot, "mockup" | "frame">, urls = new Set<string>()) => {
+  addObjectUrl(urls, snapshot.mockup.imageUrl);
+  addObjectUrl(urls, snapshot.frame.backgroundImageUrl);
+  addObjectUrl(urls, snapshot.frame.overlayUrl);
+  snapshot.frame.backgroundImages.forEach((image) => addObjectUrl(urls, image.url));
+  return urls;
+};
+
+const collectStoreObjectUrls = (state: Pick<EditorStore, "mockup" | "frame" | "past" | "future">) => {
+  const urls = collectSnapshotObjectUrls({ mockup: state.mockup, frame: state.frame });
+  state.past.forEach((snapshot) => collectSnapshotObjectUrls(snapshot, urls));
+  state.future.forEach((snapshot) => collectSnapshotObjectUrls(snapshot, urls));
+  return urls;
+};
+
+const collectSnapshotsObjectUrls = (snapshots: EditorSnapshot[]) => {
+  const urls = new Set<string>();
+  snapshots.forEach((snapshot) => collectSnapshotObjectUrls(snapshot, urls));
+  return urls;
+};
+
+const revokeUnreferencedObjectUrls = (candidates: Iterable<string>, state: Pick<EditorStore, "mockup" | "frame" | "past" | "future">) => {
+  const referenced = collectStoreObjectUrls(state);
+  new Set(candidates).forEach((url) => {
+    if (!referenced.has(url)) revokeObjectUrl(url);
+  });
+};
+
+const makeLocalBackgroundId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  return `background-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
+
+const isImageFile = (file: File) => file.type.startsWith("image/");
+
 export const useEditorStore = create<EditorStore>((set, get) => {
   const withHistory = (next: Partial<Pick<EditorStore, "mockup" | "frame" | "camera" | "ui" | "exportSettings">>) => {
     const state = get();
+    const discardedFutureUrls = collectSnapshotsObjectUrls(state.future);
     set({
       ...next,
       past: [...state.past.slice(-39), makeSnapshot(state)],
       future: [],
     });
+    revokeUnreferencedObjectUrls(discardedFutureUrls, get());
   };
 
   return {
@@ -142,9 +189,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     past: [],
     future: [],
     setMockupImage: (url, name) => {
-      const previous = get().mockup.imageUrl;
       withHistory({ mockup: { ...get().mockup, imageUrl: url, imageName: name, hideImage: false } });
-      revokeObjectUrl(previous);
     },
     setMockupMode: (mode) => withHistory({ mockup: { ...get().mockup, mode } }),
     setMockupStyle: (style) => withHistory({ mockup: { ...get().mockup, style } }),
@@ -159,8 +204,40 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),
     setFrame: (frame) => withHistory({ frame: { ...get().frame, ...frame } }),
+    addBackgroundImages: (files) => {
+      const images: BackgroundImage[] = files.filter(isImageFile).map((file) => ({
+        id: makeLocalBackgroundId(),
+        name: file.name || "Background image",
+        url: URL.createObjectURL(file),
+      }));
+      const first = images[0];
+      if (!first) return;
+      const frame = get().frame;
+      withHistory({
+        frame: {
+          ...frame,
+          backgroundMode: "image",
+          backgroundImageUrl: first.url,
+          backgroundImageName: first.name,
+          backgroundImages: [...frame.backgroundImages, ...images],
+        },
+      });
+    },
+    randomizeBackground: () => {
+      const frame = get().frame;
+      const items = [
+        ...BACKGROUNDS.map((background) => ({ type: "preset" as const, id: background.id })),
+        ...frame.backgroundImages.map((background) => ({ type: "local" as const, id: background.id })),
+      ];
+      const item = items[Math.floor(Math.random() * items.length)];
+      if (!item) return;
+      if (item.type === "preset") {
+        get().selectBackgroundPreset(item.id);
+        return;
+      }
+      get().selectBackgroundImage(item.id);
+    },
     setBackgroundImage: (url, name) => {
-      const previous = get().frame.backgroundImageUrl;
       withHistory({
         frame: {
           ...get().frame,
@@ -169,12 +246,32 @@ export const useEditorStore = create<EditorStore>((set, get) => {
           backgroundImageName: url ? name ?? "Background loaded" : null,
         },
       });
-      revokeObjectUrl(previous);
+    },
+    selectBackgroundImage: (id) => {
+      const image = get().frame.backgroundImages.find((background) => background.id === id);
+      if (!image) return;
+      withHistory({
+        frame: {
+          ...get().frame,
+          backgroundMode: "image",
+          backgroundImageUrl: image.url,
+          backgroundImageName: image.name,
+        },
+      });
+    },
+    selectBackgroundPreset: (id) => {
+      withHistory({
+        frame: {
+          ...get().frame,
+          backgroundMode: "image",
+          selectedBackgroundId: id,
+          backgroundImageUrl: null,
+          backgroundImageName: null,
+        },
+      });
     },
     setOverlay: (url) => {
-      const previous = get().frame.overlayUrl;
       withHistory({ frame: { ...get().frame, overlayUrl: url } });
-      revokeObjectUrl(previous);
     },
     setCamera: (camera) => withHistory({ camera: { ...get().camera, ...camera } }),
     applyCameraPreset: (preset) => withHistory({ camera: CAMERA_PRESET_MAP[preset] }),

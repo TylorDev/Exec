@@ -4,6 +4,8 @@ import { Field } from "@/components/Field/Field";
 import styles from "./SelectControl.module.scss";
 
 interface Option<T extends string> {
+  description?: string;
+  disabled?: boolean;
   label: string;
   value: T;
 }
@@ -31,8 +33,8 @@ export function SelectControl<T extends string>({ label, options, value, onChang
           <Select.Content className={styles.content} position="popper" sideOffset={8}>
             <Select.Viewport className={styles.viewport}>
               {options.map((option) => (
-                <Select.Item className={styles.item} key={option.value} value={option.value}>
-                  <Select.ItemText>{option.label}</Select.ItemText>
+                <Select.Item className={styles.item} disabled={option.disabled} key={option.value} value={option.value}>
+                  <Select.ItemText>{option.description ? `${option.label} (${option.description})` : option.label}</Select.ItemText>
                   <Select.ItemIndicator className={styles.indicator}>
                     <Check />
                   </Select.ItemIndicator>

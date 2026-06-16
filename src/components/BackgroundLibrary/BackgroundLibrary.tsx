@@ -7,9 +7,8 @@ import { useEditorStore } from "@/store/editorStore";
 import styles from "./BackgroundLibrary.module.scss";
 
 export function BackgroundLibrary() {
-  const selectedBackgroundId = useEditorStore((state) => state.frame.selectedBackgroundId);
-  const setFrame = useEditorStore((state) => state.setFrame);
-  const setBackgroundImage = useEditorStore((state) => state.setBackgroundImage);
+  const { backgroundImageUrl, selectedBackgroundId } = useEditorStore((state) => state.frame);
+  const selectBackgroundPreset = useEditorStore((state) => state.selectBackgroundPreset);
 
   return (
     <ScrollPanel className={styles.library}>
@@ -21,11 +20,10 @@ export function BackgroundLibrary() {
             className={styles.grid}
             onValueChange={(value) => {
               if (!value) return;
-              setFrame({ selectedBackgroundId: value, backgroundMode: "image" });
-              setBackgroundImage(null);
+              selectBackgroundPreset(value);
             }}
             type="single"
-            value={selectedBackgroundId}
+            value={backgroundImageUrl ? "" : selectedBackgroundId}
           >
             {BACKGROUNDS.filter((background) => background.category === category).map((background) => (
               <ToggleGroup.Item

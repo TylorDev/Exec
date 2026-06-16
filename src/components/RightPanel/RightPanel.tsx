@@ -1,6 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { ControlGroup } from "@/components/ControlGroup/ControlGroup";
 import { CssMockupPreview } from "@/components/CssMockupPreview/CssMockupPreview";
@@ -9,7 +10,7 @@ import { SelectControl } from "@/components/SelectControl/SelectControl";
 import { SliderControl } from "@/components/SliderControl/SliderControl";
 import { CAMERA_PRESETS, getActiveCameraPreset } from "@/data/cameraPresets";
 import { useEditorStore } from "@/store/editorStore";
-import { exportScene } from "@/utils/exportScene";
+import { canEncodeExportFormat, exportScene, getExportErrorMessage } from "@/utils/exportScene";
 import { getSceneResolution } from "@/utils/scene";
 import type { ExportFormat } from "@/types/editor";
 import styles from "./RightPanel.module.scss";
@@ -17,6 +18,14 @@ import styles from "./RightPanel.module.scss";
 interface RightPanelProps {
   sceneRef: React.RefObject<HTMLDivElement | null>;
 }
+
+const BASE_FORMAT_OPTIONS: Array<{ label: string; value: ExportFormat }> = [
+  { label: "PNG", value: "png" },
+  { label: "JPG", value: "jpg" },
+  { label: "JPEG", value: "jpeg" },
+  { label: "WebP", value: "webp" },
+  { label: "AVIF", value: "avif" },
+];
 
 export function RightPanel({ sceneRef }: RightPanelProps) {
   const frame = useEditorStore((state) => state.frame);
@@ -29,9 +38,62 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
   const setExportStatus = useEditorStore((state) => state.setExportStatus);
   const resolution = getSceneResolution(frame);
   const activePreset = getActiveCameraPreset(camera);
+  const [formatSupport, setFormatSupport] = useState<Partial<Record<ExportFormat, boolean>>>({
+    jpeg: true,
+    jpg: true,
+    png: true,
+  });
+
+  useEffect(() => {
+    let active = true;
+
+    const detectSupport = async () => {
+      const entries = await Promise.all(BASE_FORMAT_OPTIONS.map(async (option) => [option.value, await canEncodeExportFormat(option.value)] as const));
+      if (!active) return;
+
+      const nextSupport = Object.fromEntries(entries) as Record<ExportFormat, boolean>;
+      setFormatSupport(nextSupport);
+    };
+
+    detectSupport();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (formatSupport[exportSettings.format] !== false) return;
+
+    setExportFormat("png");
+    setExportStatus({
+      error: `${exportSettings.format.toUpperCase()} export is not supported by this browser. Switched to PNG.`,
+      isExporting: false,
+    });
+  }, [exportSettings.format, formatSupport, setExportFormat, setExportStatus]);
+
+  const formatOptions = useMemo(
+    () =>
+      BASE_FORMAT_OPTIONS.map((option) => {
+        const supported = formatSupport[option.value] ?? true;
+        return {
+          ...option,
+          description: supported ? undefined : "not supported",
+          disabled: !supported,
+        };
+      }),
+    [formatSupport],
+  );
 
   const handleExport = async () => {
     if (!sceneRef.current) return;
+    if (formatSupport[exportSettings.format] === false) {
+      setExportStatus({
+        error: `${exportSettings.format.toUpperCase()} export is not supported by this browser. Select another format.`,
+        isExporting: false,
+      });
+      return;
+    }
     setExportStatus({ error: null, isExporting: true });
     try {
       await exportScene({
@@ -44,8 +106,9 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
       });
       setExportStatus({ error: null, isExporting: false });
     } catch (error) {
+      console.error("Export failed", error);
       setExportStatus({
-        error: error instanceof Error ? error.message : "Export failed.",
+        error: getExportErrorMessage(error),
         isExporting: false,
       });
     }
@@ -64,13 +127,7 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
           <SelectControl<ExportFormat>
             label="Format"
             onChange={setExportFormat}
-            options={[
-              { label: "PNG", value: "png" },
-              { label: "JPG", value: "jpg" },
-              { label: "JPEG", value: "jpeg" },
-              { label: "WebP", value: "webp" },
-              { label: "AVIF", value: "avif" },
-            ]}
+            options={formatOptions}
             value={exportSettings.format}
           />
           <SliderControl

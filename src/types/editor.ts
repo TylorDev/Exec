@@ -40,6 +40,12 @@ export interface BackgroundPreset {
   css: string;
 }
 
+export interface BackgroundImage {
+  id: string;
+  url: string;
+  name: string;
+}
+
 export interface MockupState {
   imageUrl: string | null;
   imageName: string | null;
@@ -63,6 +69,7 @@ export interface FrameState {
   backgroundMode: BackgroundMode;
   backgroundImageUrl: string | null;
   backgroundImageName: string | null;
+  backgroundImages: BackgroundImage[];
   solidColor: string;
   selectedBackgroundId: string;
   blur: number;

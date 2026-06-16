@@ -16,7 +16,7 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
   const [isDragging, setIsDragging] = useState(false);
   const setMockupImage = useEditorStore((state) => state.setMockupImage);
   const setOverlay = useEditorStore((state) => state.setOverlay);
-  const setBackgroundImage = useEditorStore((state) => state.setBackgroundImage);
+  const addBackgroundImages = useEditorStore((state) => state.addBackgroundImages);
   const imageName = useEditorStore((state) => {
     if (kind === "mockup") return state.mockup.imageName;
     if (kind === "background") return state.frame.backgroundImageName ?? (state.frame.backgroundImageUrl ? "Background loaded" : null);
@@ -25,11 +25,11 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
 
   const acceptFile = (file: File) => {
     if (!isImage(file)) return;
-    const url = URL.createObjectURL(file);
     if (kind === "background") {
-      setBackgroundImage(url, file.name || "Pasted background");
+      addBackgroundImages([file]);
       return;
     }
+    const url = URL.createObjectURL(file);
     if (kind === "overlay") {
       setOverlay(url);
       return;
