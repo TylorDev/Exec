@@ -85,6 +85,45 @@ const validateExportImages = async (node: HTMLElement) => {
   );
 };
 
+const waitForLayoutFrame = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
+
+const createExportHost = (width: number, height: number) => {
+  const exportHost = document.createElement("div");
+
+  exportHost.style.height = `${height}px`;
+  exportHost.style.left = "-100000px";
+  exportHost.style.overflow = "hidden";
+  exportHost.style.pointerEvents = "none";
+  exportHost.style.position = "fixed";
+  exportHost.style.top = "0";
+  exportHost.style.width = `${width}px`;
+
+  return exportHost;
+};
+
+const createExportNode = (node: HTMLElement, width: number, height: number) => {
+  const exportNode = node.cloneNode(true) as HTMLElement;
+
+  exportNode.style.setProperty("--scene-exporting", "1");
+  exportNode.style.setProperty("--scene-mockup-image-max-height", "none");
+  exportNode.style.setProperty("--scene-mockup-width", "72%");
+  exportNode.style.aspectRatio = `${width} / ${height}`;
+  exportNode.style.height = `${height}px`;
+  exportNode.style.maxHeight = `${height}px`;
+  exportNode.style.maxWidth = `${width}px`;
+  exportNode.style.minHeight = `${height}px`;
+  exportNode.style.minWidth = `${width}px`;
+  exportNode.style.transform = "none";
+  exportNode.style.width = `${width}px`;
+
+  return exportNode;
+};
+
 const canvasToBlob = (canvas: HTMLCanvasElement, mimeType: string, quality: number) =>
   new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
@@ -161,10 +200,15 @@ export async function exportScene({ node, width, height, format, quality, transp
 
   const mimeType = getExportMimeType(format);
   let canvas: HTMLCanvasElement;
+  const exportHost = createExportHost(width, height);
+  const exportNode = createExportNode(node, width, height);
 
   try {
-    await validateExportImages(node);
-    canvas = await toCanvas(node, {
+    exportHost.appendChild(exportNode);
+    document.body.appendChild(exportHost);
+    await waitForLayoutFrame();
+    await validateExportImages(exportNode);
+    canvas = await toCanvas(exportNode, {
       cacheBust: false,
       pixelRatio: 1,
       width,
@@ -172,18 +216,11 @@ export async function exportScene({ node, width, height, format, quality, transp
       canvasWidth: width,
       canvasHeight: height,
       backgroundColor: transparent ? undefined : undefined,
-      style: {
-        height: `${height}px`,
-        maxHeight: `${height}px`,
-        maxWidth: `${width}px`,
-        minHeight: `${height}px`,
-        minWidth: `${width}px`,
-        transform: "none",
-        width: `${width}px`,
-      },
     });
   } catch (error) {
     throw wrapExportError("Render failed", error);
+  } finally {
+    exportHost.remove();
   }
 
   let blob: Blob;
