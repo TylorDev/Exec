@@ -7,6 +7,8 @@
   --mockup-shadow-x: 0px;
   --mockup-shadow-y: 32px;
   --glass-blur: 8px;
+  --glass-color: #89f7dc;
+  --glass-color-rgb: 137, 247, 220;
   --liquid-glass-filter: none;
   box-shadow: var(--mockup-shadow-x) var(--mockup-shadow-y) var(--mockup-shadow-blur) var(--mockup-shadow-spread) rgba(0, 0, 0, var(--mockup-shadow-opacity));
   max-width: var(--scene-mockup-width, min(72%, 960px));
@@ -101,10 +103,10 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(1.9) contrast(1.08);
   background:
     radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.72), transparent 22%),
-    radial-gradient(circle at 88% 92%, rgba(96, 154, 255, 0.28), transparent 30%),
-    linear-gradient(132deg, rgba(255, 255, 255, 0.28), rgba(137, 247, 220, 0.1) 34%, rgba(61, 95, 180, 0.18) 70%, rgba(255, 255, 255, 0.2)),
-    rgba(255, 255, 255, 0.15);
-  border: clamp(2px, calc(var(--mockup-border-width) / 5), 9px) solid rgba(226, 255, 248, 0.64);
+    radial-gradient(circle at 88% 92%, rgba(var(--glass-color-rgb), 0.32), transparent 30%),
+    linear-gradient(132deg, rgba(255, 255, 255, 0.28), rgba(var(--glass-color-rgb), 0.14) 34%, rgba(var(--glass-color-rgb), 0.2) 70%, rgba(255, 255, 255, 0.2)),
+    rgba(var(--glass-color-rgb), 0.08);
+  border: clamp(2px, calc(var(--mockup-border-width) / 5), 9px) solid rgba(var(--glass-color-rgb), 0.64);
   box-shadow:
     0 28px 70px rgba(0, 0, 0, 0.34),
     inset 0 0 0 1px rgba(255, 255, 255, 0.46),
@@ -124,7 +126,8 @@
 .trueLiquidGlassHeavy .blurLayer::before {
   background:
     linear-gradient(118deg, rgba(255, 255, 255, 0.72), transparent 18% 74%, rgba(255, 255, 255, 0.42)),
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.52), transparent 24%);
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.52), transparent 24%),
+    radial-gradient(circle at 78% 22%, rgba(var(--glass-color-rgb), 0.34), transparent 32%);
   mix-blend-mode: screen;
   opacity: 0.62;
 }
@@ -135,7 +138,7 @@
     linear-gradient(0deg, rgba(255, 255, 255, 0.42), transparent 16% 84%, rgba(9, 12, 22, 0.28));
   box-shadow:
     inset 0 0 34px rgba(255, 255, 255, 0.2),
-    inset 0 0 74px rgba(102, 196, 255, 0.15);
+    inset 0 0 74px rgba(var(--glass-color-rgb), 0.18);
   opacity: 0.86;
 }
 
