@@ -30,6 +30,11 @@ const initialMockup: MockupState = {
   shadowSpread: 0,
   shadowX: 0,
   shadowY: 32,
+  glassRefraction: 100,
+  glassThickness: 42,
+  glassSpecular: 55,
+  glassBlur: 8,
+  glassColor: "#89f7dc",
   hideImage: false,
 };
 
@@ -96,6 +101,11 @@ interface EditorStore {
   setShadowDirection: (shadowX: number, shadowY: number) => void;
   setShadowOpacity: (shadowOpacity: number) => void;
   setShadowSpread: (shadowSpread: number) => void;
+  setGlassRefraction: (glassRefraction: number) => void;
+  setGlassThickness: (glassThickness: number) => void;
+  setGlassSpecular: (glassSpecular: number) => void;
+  setGlassBlur: (glassBlur: number) => void;
+  setGlassColor: (glassColor: string) => void;
   setHideImage: (hideImage: boolean) => void;
   setActiveTab: (activeTab: UiState["activeTab"]) => void;
   setHideUi: (hideUi: boolean) => void;
@@ -200,6 +210,11 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setShadowDirection: (shadowX, shadowY) => withHistory({ mockup: { ...get().mockup, shadowX, shadowY } }),
     setShadowOpacity: (shadowOpacity) => withHistory({ mockup: { ...get().mockup, shadowOpacity } }),
     setShadowSpread: (shadowSpread) => withHistory({ mockup: { ...get().mockup, shadowSpread } }),
+    setGlassRefraction: (glassRefraction) => withHistory({ mockup: { ...get().mockup, glassRefraction } }),
+    setGlassThickness: (glassThickness) => withHistory({ mockup: { ...get().mockup, glassThickness } }),
+    setGlassSpecular: (glassSpecular) => withHistory({ mockup: { ...get().mockup, glassSpecular } }),
+    setGlassBlur: (glassBlur) => withHistory({ mockup: { ...get().mockup, glassBlur } }),
+    setGlassColor: (glassColor) => withHistory({ mockup: { ...get().mockup, glassColor } }),
     setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),

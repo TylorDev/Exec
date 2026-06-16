@@ -13,6 +13,7 @@ export const MOCKUP_STYLES: MockupStyleOption[] = [
   { id: "thick-blur-frame", label: "Thick Blur", description: "Heavy frosted frame", icon: Frame },
   { id: "bevel", label: "Bevel", description: "Chamfered edge", icon: Gem },
   { id: "liquid-glass", label: "Liquid Glass", description: "Glossy translucent border", icon: Droplets },
+  { id: "true-liquid-glass-heavy", label: "True Liquid Glass", description: "Heavy refractive glass", icon: Droplets },
   { id: "solid-border", label: "Solid Border", description: "Opaque crisp frame", icon: Square },
   { id: "stack", label: "Stack", description: "Layered cards", icon: Layers },
   { id: "outline", label: "Outline", description: "Thin empty border", icon: PanelTop },

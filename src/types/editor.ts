@@ -3,6 +3,7 @@ export type MockupStyle =
   | "thick-blur-frame"
   | "bevel"
   | "liquid-glass"
+  | "true-liquid-glass-heavy"
   | "solid-border"
   | "stack"
   | "outline"
@@ -59,6 +60,11 @@ export interface MockupState {
   shadowSpread: number;
   shadowX: number;
   shadowY: number;
+  glassRefraction: number;
+  glassThickness: number;
+  glassSpecular: number;
+  glassBlur: number;
+  glassColor: string;
   hideImage: boolean;
 }
 

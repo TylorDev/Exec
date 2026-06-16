@@ -32,6 +32,11 @@ export function LeftPanel() {
   const setShadowDirection = useEditorStore((state) => state.setShadowDirection);
   const setShadowOpacity = useEditorStore((state) => state.setShadowOpacity);
   const setShadowSpread = useEditorStore((state) => state.setShadowSpread);
+  const setGlassBlur = useEditorStore((state) => state.setGlassBlur);
+  const setGlassColor = useEditorStore((state) => state.setGlassColor);
+  const setGlassRefraction = useEditorStore((state) => state.setGlassRefraction);
+  const setGlassSpecular = useEditorStore((state) => state.setGlassSpecular);
+  const setGlassThickness = useEditorStore((state) => state.setGlassThickness);
   const setHideImage = useEditorStore((state) => state.setHideImage);
   const setFrame = useEditorStore((state) => state.setFrame);
   const setOverlay = useEditorStore((state) => state.setOverlay);
@@ -65,6 +70,19 @@ export function LeftPanel() {
             <StylePicker onChange={setMockupStyle} value={mockup.style} />
             <SliderControl label="Border radius" max={64} min={0} onChange={setBorderRadius} suffix="px" value={mockup.borderRadius} />
             <SliderControl label="Border thickness" max={40} min={0} onChange={setBorderWidth} suffix="px" value={mockup.borderWidth} />
+            {mockup.style === "true-liquid-glass-heavy" ? (
+              <>
+                <SliderControl label="Glass refraction" max={160} min={0} onChange={setGlassRefraction} suffix="%" value={mockup.glassRefraction} />
+                <SliderControl label="Glass thickness" max={80} min={8} onChange={setGlassThickness} suffix="px" value={mockup.glassThickness} />
+                <SliderControl label="Specular highlight" max={100} min={0} onChange={setGlassSpecular} suffix="%" value={mockup.glassSpecular} />
+                <SliderControl label="Glass blur" max={30} min={0} onChange={setGlassBlur} suffix="px" value={mockup.glassBlur} />
+                <div className={styles.colorInput}>
+                  <Field label="Glass color">
+                    <input onChange={(event) => setGlassColor(event.target.value)} type="color" value={mockup.glassColor} />
+                  </Field>
+                </div>
+              </>
+            ) : null}
             <SelectControl<ShadowLevel>
               label="Shadow"
               onChange={setShadow}
