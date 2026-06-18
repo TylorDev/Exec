@@ -1,11 +1,21 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  align-items: center;
+
+}
+
 .control {
   align-items: center;
   display: flex;
-  gap: 6px;
+  gap: 5px;
   min-height: 24px;
-  padding: 0 8px 0 4px;
+  padding: 0 8px 0 2px;
   position: relative;
   width: 100%;
+
 }
 
 .control::after {
@@ -21,6 +31,34 @@
 
 .control[data-editing="true"] .label {
   background: var(--Selected-label);
+}
+
+.disclosure {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--color-text);
+  display: inline-flex;
+  flex: 0 0 16px;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+  width: 16px;
+}
+
+.disclosure svg {
+  height: 15px;
+  transition: transform 140ms ease;
+  width: 15px;
+}
+
+.disclosure[aria-expanded="true"] svg {
+  transform: rotate(90deg);
+}
+
+.disclosure:focus-visible {
+  outline: 1px solid var(--primary-accent);
+  outline-offset: 1px;
 }
 
 .icon {
@@ -61,6 +99,10 @@
   text-align: right;
   touch-action: none;
   user-select: none;
+}
+
+.valueButton[data-dragging="true"] {
+  cursor: none;
 }
 
 .valueButton:focus-visible {
@@ -120,4 +162,107 @@
 .input::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
+}
+
+.sliderPanel {
+  max-width: 100%;
+  width: 80%;
+
+}
+
+.bounds {
+  align-items: center;
+  color: var(--color-text);
+  display: flex;
+  font-size: 12px;
+  font-weight: 600;
+  justify-content: space-between;
+  line-height: 1;
+  padding: 2px 0 8px;
+}
+
+.sliderRoot {
+  align-items: center;
+  display: flex;
+  height: 18px;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  width: 100%;
+}
+
+.sliderTrack {
+  background: var(--color-border);
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sliderRange {
+  background: var(--color-border);
+  height: 100%;
+  position: absolute;
+}
+
+.sliderThumb {
+  background: var(--color-panel);
+  border: 2px solid var(--color-text);
+  border-radius: 50%;
+  display: block;
+  height: 16px;
+  width: 16px;
+
+}
+
+.sliderThumb:focus-visible {
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 1px var(--primary-accent);
+  outline: 0;
+}
+
+.simulatedCursor {
+  align-items: center;
+  display: flex;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.45));
+  height: 18px;
+  left: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  z-index: 2147483647;
+}
+
+.simulatedCursor::before,
+.simulatedCursor::after {
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+  content: "";
+  position: absolute;
+}
+
+.simulatedCursor::before {
+  border-right: 8px solid var(--primary-accent);
+  left: 0;
+}
+
+.simulatedCursor::after {
+  border-left: 8px solid var(--primary-accent);
+  right: 0;
+}
+
+.simulatedCursor {
+  background:
+    linear-gradient(
+      to right,
+      transparent 0 7px,
+      var(--primary-accent) 7px 21px,
+      transparent 21px 100%
+    );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
 }

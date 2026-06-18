@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import "./globals.scss";
+
+const geist = Geist({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
 
 export const metadata: Metadata = {
   title: "Exec",
@@ -16,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>{children}</body>
+      <body className={`${geist.className} ${geist.variable}`} suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
