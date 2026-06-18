@@ -4,7 +4,7 @@
 }
 
 .wrapper > span {
-  color: var(--color-text-muted);
+  color: var(--disabled-color);
   font-size: 12px;
 }
 
@@ -16,10 +16,10 @@
 
 .item {
   align-items: start;
-  background: #0d0f16;
+  background: var(--dark-drimary);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  color: var(--color-text-muted);
+  color: var(--disabled-color);
   display: grid;
   gap: 5px;
   min-height: 86px;
@@ -29,7 +29,7 @@
 }
 
 .item svg {
-  color: var(--color-accent);
+  color: var(--primary-accent);
   height: 18px;
   width: 18px;
 }
@@ -40,17 +40,16 @@
 }
 
 .item small {
-  color: var(--color-text-soft);
+  color: var(--secondary-accent);
   font-size: 11px;
   line-height: 1.25;
 }
 
 .item:hover {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-border);
 }
 
 .item[data-state="on"] {
-  background: var(--color-accent-muted);
-  border-color: var(--color-accent);
+  border-color: var(--primary-accent);
   color: var(--color-text);
 }

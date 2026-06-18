@@ -17,12 +17,12 @@
 }
 
 .primary {
-  background: var(--color-accent);
-  color: #06100d;
+  background: var(--primary-accent);
+  color: var(--color-text);
 }
 
 .secondary {
-  background: var(--color-elevated);
+  background: var(--select-hover);
   border-color: var(--color-border);
   color: var(--color-text);
 }
@@ -30,23 +30,22 @@
 .ghost {
   background: transparent;
   border-color: var(--color-border);
-  color: var(--color-text-muted);
+  color: var(--disabled-color);
 }
 
 .danger {
   background: rgba(255, 122, 144, 0.12);
   border-color: rgba(255, 122, 144, 0.28);
-  color: var(--color-danger);
 }
 
 .button:hover:not(:disabled) {
-  border-color: var(--color-border-strong);
+  background: var(--select-hover);
+  border-color: var(--color-border);
   transform: translateY(-1px);
 }
 
 .button:disabled,
 .button[data-disabled] {
   cursor: not-allowed;
-  color: var(--color-disabled);
   opacity: 0.55;
 }

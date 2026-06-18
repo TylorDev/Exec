@@ -5,7 +5,7 @@
 }
 
 .switch {
-  background: #0d0f16;
+  background: var(--dark-drimary);
   border: 1px solid var(--color-border);
   border-radius: 999px;
   height: 24px;
@@ -16,12 +16,11 @@
 }
 
 .switch[data-state="checked"] {
-  background: var(--color-accent-muted);
-  border-color: rgba(113, 230, 196, 0.45);
+  border-color: rgba(50, 93, 127, 0.56);
 }
 
 .thumb {
-  background: var(--color-text-muted);
+  background: var(--disabled-color);
   border-radius: 50%;
   display: block;
   height: 16px;
@@ -31,6 +30,6 @@
 }
 
 .switch[data-state="checked"] .thumb {
-  background: var(--color-accent);
+  background: var(--primary-accent);
   transform: translateX(21px);
 }

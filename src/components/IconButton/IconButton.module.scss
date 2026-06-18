@@ -1,6 +1,6 @@
 .button {
   align-items: center;
-  background: rgba(17, 19, 27, 0.88);
+  background: var(--dark-drimary);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   color: var(--color-text);
@@ -20,8 +20,8 @@
 }
 
 .button:hover:not(:disabled) {
-  background: var(--color-elevated);
-  border-color: var(--color-border-strong);
+  background: var(--select-hover);
+  border-color: var(--color-border);
   transform: translateY(-1px);
 }
 
@@ -31,15 +31,10 @@
 }
 
 .tooltip {
-  background: var(--color-elevated-strong);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   color: var(--color-text);
   font-size: 12px;
   padding: 7px 9px;
   z-index: 60;
-}
-
-.arrow {
-  fill: var(--color-elevated-strong);
 }

@@ -1,5 +1,6 @@
 import type { EditorSnapshot, ExportFormat } from "@/types/editor";
 import type { ServerExportPayload } from "@/types/export";
+import { exportCanvasScene } from "@/utils/exportCanvasScene";
 
 const MIME_BY_FORMAT: Record<ExportFormat, string> = {
   png: "image/png",
@@ -20,7 +21,6 @@ export function canEncodeExportFormat(format: ExportFormat) {
 export interface ExportSceneOptions {
   format: ExportFormat;
   height: number;
-  previewWidth: number;
   quality: number;
   snapshot: EditorSnapshot;
   transparent: boolean;
@@ -112,6 +112,12 @@ export async function exportScene(options: ExportSceneOptions) {
     ...options,
     snapshot: await makeSerializableSnapshot(options.snapshot),
   };
+
+  if (payload.snapshot.exportSettings.renderEngine === "canvas") {
+    await exportCanvasScene(payload);
+    return;
+  }
+
   const response = await fetch("/api/export", {
     body: JSON.stringify(payload),
     headers: {

@@ -16,7 +16,7 @@
 }
 
 .header span {
-  color: var(--color-accent);
+  color: var(--primary-accent);
   display: block;
   font-size: 12px;
   font-weight: 800;
@@ -40,13 +40,13 @@
 }
 
 .hint {
-  color: var(--color-text-muted);
+  color: var(--disabled-color);
   font-size: 12px;
 }
 
 .customGrid input,
 .colorInput input {
-  background: #0d0f16;
+  background: var(--dark-drimary);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   color: var(--color-text);
@@ -57,7 +57,7 @@
 
 .customGrid input:focus,
 .colorInput input:focus {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-border);
 }
 
 .colorInput input[type="color"] {

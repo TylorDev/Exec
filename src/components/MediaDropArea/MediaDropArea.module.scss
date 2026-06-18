@@ -1,11 +1,11 @@
 .dropArea {
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(113, 230, 196, 0.08), transparent),
-    #0d0f16;
-  border: 1px dashed var(--color-border-strong);
+    linear-gradient(135deg, rgba(50, 93, 127, 0.16), transparent),
+    var(--dark-drimary);
+  border: 1px dashed var(--color-border);
   border-radius: 8px;
-  color: var(--color-text-muted);
+  color: var(--disabled-color);
   display: grid;
   gap: 9px;
   justify-items: center;
@@ -18,7 +18,7 @@
 }
 
 .dropArea > svg {
-  color: var(--color-accent);
+  color: var(--primary-accent);
   height: 24px;
   width: 24px;
 }
@@ -46,7 +46,6 @@
 
 .dragging {
   background:
-    linear-gradient(135deg, rgba(113, 230, 196, 0.16), transparent),
-    #10151d;
-  border-color: var(--color-accent);
+    linear-gradient(135deg, rgba(50, 93, 127, 0.26), transparent);
+  border-color: var(--primary-accent);
 }

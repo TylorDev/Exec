@@ -1,38 +1,123 @@
-.root {
+.control {
   align-items: center;
   display: flex;
-  height: 20px;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 8px 0 4px;
   position: relative;
-  touch-action: none;
   width: 100%;
 }
 
-.track {
-  background: #0d0f16;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  flex: 1;
-  height: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.range {
-  background: linear-gradient(90deg, var(--color-accent-strong), var(--color-accent));
-  height: 100%;
+.control::after {
+  background: var(--color-border);
+  bottom: 0;
+  content: "";
+  height: 1px;
+  left: 0;
+  opacity: 0.7;
   position: absolute;
+  right: 0;
 }
 
-.thumb {
-  background: var(--color-text);
-  border: 2px solid var(--color-accent);
-  border-radius: 50%;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
-  display: block;
-  height: 18px;
-  width: 18px;
+.control[data-editing="true"] .label {
+  background: var(--Selected-label);
 }
 
-.thumb:hover {
-  background: #ffffff;
+.icon {
+  color: var(--disabled-color);
+  flex: 0 0 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.label {
+  background: transparent;
+  border-radius: 3px;
+  color: var(--color-text);
+  flex: 1 1 auto;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding: 3px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.valueButton {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  cursor: ew-resize;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  justify-content: flex-end;
+  min-height: 22px;
+  min-width: 70px;
+  padding: 1px 0 1px 6px;
+  text-align: right;
+  touch-action: none;
+  user-select: none;
+}
+
+.valueButton:focus-visible {
+  outline: 1px solid var(--primary-accent);
+  outline-offset: 2px;
+}
+
+.value {
+  color: var(--secondary-accent);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.valueButton:hover .value {
+  color: var(--primary-accent);
+}
+
+.unit {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.editValue {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  justify-content: flex-end;
+  min-width: 70px;
+}
+
+.input {
+  appearance: textfield;
+  background: var(--dark-drimary);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  color: var(--color-text);
+  flex: 0 0 58px;
+  font-size: 13px;
+  min-height: 22px;
+  min-width: 0;
+  padding: 0 6px;
+  text-align: right;
+  -moz-appearance: textfield;
+}
+
+.input:focus {
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 1px var(--primary-accent);
+  outline: 0;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
 }

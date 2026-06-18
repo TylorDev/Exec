@@ -12,7 +12,7 @@ import { CAMERA_PRESETS, getActiveCameraPreset } from "@/data/cameraPresets";
 import { useEditorStore } from "@/store/editorStore";
 import { canEncodeExportFormat, exportScene, getExportErrorMessage } from "@/utils/exportScene";
 import { getSceneResolution } from "@/utils/scene";
-import type { ExportFormat } from "@/types/editor";
+import type { ExportFormat, RenderEngine } from "@/types/editor";
 import styles from "./RightPanel.module.scss";
 
 interface RightPanelProps {
@@ -27,6 +27,11 @@ const BASE_FORMAT_OPTIONS: Array<{ label: string; value: ExportFormat }> = [
   { label: "AVIF", value: "avif" },
 ];
 
+const RENDER_ENGINE_OPTIONS: Array<{ label: string; value: RenderEngine }> = [
+  { label: "Chromium/Playwright", value: "chromium" },
+  { label: "Canvas/WebGL", value: "canvas" },
+];
+
 export function RightPanel({ sceneRef }: RightPanelProps) {
   const frame = useEditorStore((state) => state.frame);
   const camera = useEditorStore((state) => state.camera);
@@ -36,6 +41,7 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
   const applyCameraPreset = useEditorStore((state) => state.applyCameraPreset);
   const setExportFormat = useEditorStore((state) => state.setExportFormat);
   const setExportQuality = useEditorStore((state) => state.setExportQuality);
+  const setExportRenderEngine = useEditorStore((state) => state.setExportRenderEngine);
   const setExportStatus = useEditorStore((state) => state.setExportStatus);
   const resolution = getSceneResolution(frame);
   const activePreset = getActiveCameraPreset(camera);
@@ -97,11 +103,9 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
     }
     setExportStatus({ error: null, isExporting: true });
     try {
-      const previewWidth = sceneRef.current.getBoundingClientRect().width || resolution.width;
       await exportScene({
         format: exportSettings.format,
         height: resolution.height,
-        previewWidth,
         quality: exportSettings.quality,
         snapshot: {
           camera,
@@ -138,6 +142,12 @@ export function RightPanel({ sceneRef }: RightPanelProps) {
             onChange={setExportFormat}
             options={formatOptions}
             value={exportSettings.format}
+          />
+          <SelectControl<RenderEngine>
+            label="Render engine"
+            onChange={setExportRenderEngine}
+            options={RENDER_ENGINE_OPTIONS}
+            value={exportSettings.renderEngine}
           />
           <SliderControl
             label="Quality"

@@ -25,6 +25,7 @@ export type BackgroundCategory =
   | "Texture";
 export type CameraPreset = "center" | "top" | "bottom" | "left" | "right" | "close" | "wide";
 export type ExportFormat = "png" | "jpg" | "jpeg" | "webp" | "avif";
+export type RenderEngine = "chromium" | "canvas";
 
 export interface Resolution {
   id: AspectRatioId;
@@ -104,6 +105,7 @@ export interface UiState {
 export interface ExportState {
   format: ExportFormat;
   quality: number;
+  renderEngine: RenderEngine;
   error: string | null;
   isExporting: boolean;
 }

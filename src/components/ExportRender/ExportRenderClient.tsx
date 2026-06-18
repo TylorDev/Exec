@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CssMockupPreview } from "@/components/CssMockupPreview/CssMockupPreview";
 import { useEditorStore } from "@/store/editorStore";
 import type { ServerExportPayload } from "@/types/export";
+import { getCanonicalExportScale } from "@/utils/exportScale";
 import { getBackgroundCss } from "@/utils/scene";
 import styles from "@/components/ScenePreview/ScenePreview.module.scss";
 
@@ -83,7 +84,7 @@ export function ExportRenderClient() {
     return null;
   }
 
-  const exportScale = payload.previewWidth > 0 ? payload.width / payload.previewWidth : 1;
+  const exportScale = getCanonicalExportScale(payload.width, payload.height);
   const background = getBackgroundCss(frame);
 
   return (

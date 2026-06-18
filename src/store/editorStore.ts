@@ -13,6 +13,7 @@ import type {
   FrameState,
   MockupMode,
   MockupState,
+  RenderEngine,
   ShadowLevel,
   UiState,
 } from "@/types/editor";
@@ -74,6 +75,7 @@ const initialUi: UiState = {
 const initialExport: ExportState = {
   format: "png",
   quality: 0.92,
+  renderEngine: "chromium",
   error: null,
   isExporting: false,
 };
@@ -124,6 +126,7 @@ interface EditorStore {
   applyCameraPreset: (preset: CameraPreset) => void;
   setExportFormat: (format: ExportFormat) => void;
   setExportQuality: (quality: number) => void;
+  setExportRenderEngine: (renderEngine: RenderEngine) => void;
   setExportStatus: (status: Partial<Pick<ExportState, "error" | "isExporting">>) => void;
   undo: () => void;
   redo: () => void;
@@ -298,6 +301,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     applyCameraPreset: (preset) => withHistory({ camera: CAMERA_PRESET_MAP[preset] }),
     setExportFormat: (format) => withHistory({ exportSettings: { ...get().exportSettings, format, error: null } }),
     setExportQuality: (quality) => withHistory({ exportSettings: { ...get().exportSettings, quality } }),
+    setExportRenderEngine: (renderEngine) => withHistory({ exportSettings: { ...get().exportSettings, renderEngine, error: null } }),
     setExportStatus: (status) => set({ exportSettings: { ...get().exportSettings, ...status } }),
     undo: () => {
       const state = get();
