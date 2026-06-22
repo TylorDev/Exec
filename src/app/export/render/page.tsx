@@ -1,4 +1,4 @@
-import { ExportRenderClient } from "@/components/ExportRender/ExportRenderClient";
+import { ExportRenderClient } from "@/components/Viewport/ExportRender/ExportRenderClient";
 
 export default function ExportRenderPage() {
   return <ExportRenderClient />;

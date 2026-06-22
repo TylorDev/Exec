@@ -1,0 +1,101 @@
+.preview {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    #0b0d13;
+  background-size: 28px 28px;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+}
+
+.toolbar {
+  background: rgba(11, 13, 19, 0.72);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  left: 50%;
+  padding: 6px;
+  position: absolute;
+  top: 14px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.stage {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 24px 56px;
+  scroll-padding: 12px 24px 56px;
+}
+
+.sceneViewport {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.scene {
+  box-shadow: 0 30px 120px rgba(0, 0, 0, 0.42);
+  flex: 0 0 auto;
+  max-height: none;
+  max-width: none;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  transform-origin: center;
+}
+
+.backgroundEffects,
+.noise,
+.overlay,
+.camera {
+  inset: 0;
+  position: absolute;
+}
+
+.backgroundEffects {
+  z-index: 0;
+}
+
+.noise {
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.62) 0 1px, transparent 1px);
+  background-size: 5px 5px;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+
+.overlay {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+  z-index: 2;
+}
+
+.camera {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  transform-origin: center;
+  z-index: 3;
+}
+
+@media (max-width: 720px) {
+  .stage {
+    padding: 8px 14px 44px;
+    scroll-padding: 8px 14px 44px;
+  }
+
+  .scene {
+    max-height: none;
+    min-width: 0;
+  }
+}
