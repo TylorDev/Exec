@@ -2,7 +2,7 @@
 
 import { Monitor } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { useEditorStore } from "@/store/editorStore";
+import type { MockupState } from "@/types/editor";
 import { createLiquidGlassMaps, type LiquidGlassMaps } from "@/utils/liquidGlass";
 import styles from "./MockupRenderer.module.scss";
 
@@ -19,6 +19,7 @@ const styleClass = {
 };
 
 interface MockupRendererProps {
+  mockup: MockupState;
   variant?: "scene" | "card";
 }
 
@@ -41,8 +42,7 @@ const hexToRgb = (hexColor: string, fallback = { red: 137, green: 247, blue: 220
   };
 };
 
-export function MockupRenderer({ variant = "scene" }: MockupRendererProps) {
-  const mockup = useEditorStore((state) => state.mockup);
+export function MockupRenderer({ mockup, variant = "scene" }: MockupRendererProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const reactId = useId();
   const filterId = useMemo(() => `true-liquid-glass-${reactId.replace(/:/g, "")}`, [reactId]);

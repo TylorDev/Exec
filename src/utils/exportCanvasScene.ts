@@ -1,5 +1,5 @@
 import { BACKGROUNDS } from "@/data/backgrounds";
-import type { EditorSnapshot, ExportFormat, FrameState, MockupState } from "@/types/editor";
+import type { EditorSnapshot, ExportFormat, FrameState, LayerState, MockupState } from "@/types/editor";
 import { getCanonicalExportScale } from "@/utils/exportScale";
 import { createLiquidGlassMaps } from "@/utils/liquidGlass";
 
@@ -396,15 +396,15 @@ const getMockupRects = (image: HTMLImageElement, mockup: MockupState, width: num
   };
 };
 
-const drawMockup = async (context: CanvasRenderingContext2D, baseCanvas: HTMLCanvasElement, image: HTMLImageElement, snapshot: EditorSnapshot, width: number, height: number) => {
-  const { camera, mockup } = snapshot;
+const drawMockup = async (context: CanvasRenderingContext2D, baseCanvas: HTMLCanvasElement, image: HTMLImageElement, layer: LayerState, width: number, height: number) => {
+  const { mockup, transform } = layer;
   const scale = getCanonicalExportScale(width, height);
   const radius = mockup.borderRadius * scale;
   const rects = getMockupRects(image, mockup, width, height, scale);
-  const centerX = width / 2 + (camera.x / 100) * rects.outerRect.width;
-  const centerY = height / 2 + (camera.y / 100) * rects.outerRect.height;
-  const totalScale = camera.zoom;
-  const rotation = (camera.rotationZ * Math.PI) / 180;
+  const centerX = width / 2 + (transform.positionX / 100) * rects.outerRect.width;
+  const centerY = height / 2 + (transform.positionY / 100) * rects.outerRect.height;
+  const totalScale = transform.scale;
+  const rotation = (transform.rotationZ * Math.PI) / 180;
 
   context.save();
   context.translate(centerX, centerY);
@@ -449,7 +449,14 @@ export async function exportCanvasScene(options: ExportCanvasSceneOptions) {
     throw new Error("AVIF export is not supported by the Canvas/WebGL engine yet.");
   }
 
-  if (!options.snapshot.mockup.imageUrl || options.snapshot.mockup.hideImage) {
+  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount);
+  const layer = visibleLayers.find((visibleLayer) => visibleLayer.mockup.imageUrl && !visibleLayer.mockup.hideImage);
+
+  if (options.snapshot.activeLayerCount > 1) {
+    throw new Error("Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.");
+  }
+
+  if (!layer?.mockup.imageUrl) {
     throw new Error("Upload a screenshot before exporting.");
   }
 
@@ -486,8 +493,8 @@ export async function exportCanvasScene(options: ExportCanvasSceneOptions) {
   backgroundCanvas.height = canvas.height;
   backgroundContext.drawImage(canvas, 0, 0);
 
-  const mockupImage = await loadImage(options.snapshot.mockup.imageUrl);
-  await drawMockup(context, backgroundCanvas, mockupImage, options.snapshot, options.width, options.height);
+  const mockupImage = await loadImage(layer.mockup.imageUrl);
+  await drawMockup(context, backgroundCanvas, mockupImage, layer, options.width, options.height);
 
   const blob = await canvasToBlob(canvas, options.format, options.quality);
   downloadBlob(blob, options.format);

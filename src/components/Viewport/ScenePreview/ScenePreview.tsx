@@ -22,8 +22,8 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
   const [viewportZoom, setViewportZoom] = useState(1);
   const [isFitWidth, setIsFitWidth] = useState(false);
   const frame = useEditorStore((state) => state.frame);
-  const camera = useEditorStore((state) => state.camera);
-  const mockup = useEditorStore((state) => state.mockup);
+  const activeLayerCount = useEditorStore((state) => state.activeLayerCount);
+  const layers = useEditorStore((state) => state.layers);
   const ui = useEditorStore((state) => state.ui);
   const pastCount = useEditorStore((state) => state.past.length);
   const futureCount = useEditorStore((state) => state.future.length);
@@ -32,6 +32,7 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
   const setHideUi = useEditorStore((state) => state.setHideUi);
   const resolution = getSceneResolution(frame);
   const background = getBackgroundCss(frame);
+  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount);
   const ratio = resolution.width / resolution.height;
   const baseSize = useMemo(() => {
     const fallbackWidth = ratio >= 1 ? 980 : 560;
@@ -125,8 +126,12 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
             {frame.noise > 0 ? <div className={styles.noise} style={{ opacity: frame.noise / 100 }} /> : null}
             {frame.overlayUrl ? <img alt="" className={styles.overlay} data-export-image="overlay" src={frame.overlayUrl} style={{ opacity: frame.overlayOpacity / 100 }} /> : null}
             <div className={styles.camera}>
-              {mockup.hideImage ? null : (
-                <CssMockupPreview camera={camera} variant="scene" />
+              {visibleLayers.map((layer) =>
+                layer.mockup.hideImage ? null : (
+                  <div className={styles.layer} key={layer.id} style={{ zIndex: 10 + layer.id }}>
+                    <CssMockupPreview mockup={layer.mockup} transform={layer.transform} variant="scene" />
+                  </div>
+                ),
               )}
             </div>
           </div>

@@ -26,10 +26,12 @@
   max-width: var(--scene-mockup-width, min(72%, 960px));
   position: relative;
   transform-style: preserve-3d;
+  width: var(--scene-mockup-width, min(72%, 960px));
 }
 
 .scene {
   max-width: var(--scene-mockup-width, min(72%, 960px));
+  width: var(--scene-mockup-width, min(72%, 960px));
 }
 
 .card {

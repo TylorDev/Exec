@@ -49,18 +49,20 @@ export function ExportRenderClient() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const pending = useRef<{ reject: (error: unknown) => void; resolve: () => void } | null>(null);
   const frame = useEditorStore((state) => state.frame);
-  const camera = useEditorStore((state) => state.camera);
-  const mockup = useEditorStore((state) => state.mockup);
+  const activeLayerCount = useEditorStore((state) => state.activeLayerCount);
+  const layers = useEditorStore((state) => state.layers);
+  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount);
 
   useEffect(() => {
     window.renderExecExport = (nextPayload) =>
       new Promise<void>((resolve, reject) => {
         pending.current = { reject, resolve };
         useEditorStore.setState({
-          camera: nextPayload.snapshot.camera,
+          activeLayerCount: nextPayload.snapshot.activeLayerCount,
+          activeLayerId: nextPayload.snapshot.activeLayerId,
           exportSettings: nextPayload.snapshot.exportSettings,
           frame: nextPayload.snapshot.frame,
-          mockup: nextPayload.snapshot.mockup,
+          layers: nextPayload.snapshot.layers,
           ui: nextPayload.snapshot.ui,
         });
         setPayload(nextPayload);
@@ -78,7 +80,7 @@ export function ExportRenderClient() {
 
     pending.current = null;
     waitForReady(root).then(waiter.resolve).catch(waiter.reject);
-  }, [payload, frame, camera, mockup]);
+  }, [payload, frame, layers, activeLayerCount]);
 
   if (!payload) {
     return null;
@@ -113,7 +115,13 @@ export function ExportRenderClient() {
       {frame.noise > 0 ? <div className={styles.noise} style={{ opacity: frame.noise / 100 }} /> : null}
       {frame.overlayUrl ? <img alt="" className={styles.overlay} data-export-image="overlay" src={frame.overlayUrl} style={{ opacity: frame.overlayOpacity / 100 }} /> : null}
       <div className={styles.camera}>
-        {mockup.hideImage ? null : <CssMockupPreview camera={camera} variant="scene" />}
+        {visibleLayers.map((layer) =>
+          layer.mockup.hideImage ? null : (
+            <div className={styles.layer} key={layer.id} style={{ zIndex: 10 + layer.id }}>
+              <CssMockupPreview mockup={layer.mockup} transform={layer.transform} variant="scene" />
+            </div>
+          ),
+        )}
       </div>
     </div>
   );

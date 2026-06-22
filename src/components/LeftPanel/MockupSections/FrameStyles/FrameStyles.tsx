@@ -12,7 +12,7 @@ import type { ShadowLevel } from "@/types/editor";
 import styles from "./FrameStyles.module.scss";
 
 export function FrameStyles() {
-  const mockup = useEditorStore((state) => state.mockup);
+  const mockup = useEditorStore((state) => state.layers.find((layer) => layer.id === state.activeLayerId)?.mockup ?? state.layers[0].mockup);
   const setMockupStyle = useEditorStore((state) => state.setMockupStyle);
   const setBorderRadius = useEditorStore((state) => state.setBorderRadius);
   const setBorderWidth = useEditorStore((state) => state.setBorderWidth);

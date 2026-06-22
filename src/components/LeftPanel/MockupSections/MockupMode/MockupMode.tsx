@@ -7,7 +7,7 @@ import type { MockupMode as MockupModeValue } from "@/types/editor";
 import styles from "./MockupMode.module.scss";
 
 export function MockupMode() {
-  const mode = useEditorStore((state) => state.mockup.mode);
+  const mode = useEditorStore((state) => state.layers.find((layer) => layer.id === state.activeLayerId)?.mockup.mode ?? state.layers[0].mockup.mode);
   const setMockupMode = useEditorStore((state) => state.setMockupMode);
 
   return (

@@ -30,9 +30,10 @@ const RENDER_ENGINE_OPTIONS: Array<{ label: string; value: RenderEngine }> = [
 ];
 
 export function Export({ sceneRef }: ExportProps) {
+  const activeLayerCount = useEditorStore((state) => state.activeLayerCount);
+  const activeLayerId = useEditorStore((state) => state.activeLayerId);
   const frame = useEditorStore((state) => state.frame);
-  const camera = useEditorStore((state) => state.camera);
-  const mockup = useEditorStore((state) => state.mockup);
+  const layers = useEditorStore((state) => state.layers);
   const exportSettings = useEditorStore((state) => state.exportSettings);
   const setExportFormat = useEditorStore((state) => state.setExportFormat);
   const setExportQuality = useEditorStore((state) => state.setExportQuality);
@@ -95,6 +96,13 @@ export function Export({ sceneRef }: ExportProps) {
       });
       return;
     }
+    if (exportSettings.renderEngine === "canvas" && activeLayerCount > 1) {
+      setExportStatus({
+        error: "Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.",
+        isExporting: false,
+      });
+      return;
+    }
     setExportStatus({ error: null, isExporting: true });
     try {
       await exportScene({
@@ -102,10 +110,11 @@ export function Export({ sceneRef }: ExportProps) {
         height: resolution.height,
         quality: exportSettings.quality,
         snapshot: {
-          camera,
+          activeLayerCount,
+          activeLayerId,
           exportSettings,
           frame,
-          mockup,
+          layers,
           ui: useEditorStore.getState().ui,
         },
         transparent: frame.backgroundMode === "transparent",

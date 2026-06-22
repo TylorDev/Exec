@@ -6,11 +6,14 @@ import { CAMERA_PRESET_MAP } from "@/data/cameraPresets";
 import type {
   BackgroundImage,
   CameraPreset,
-  CameraState,
   EditorSnapshot,
   ExportFormat,
   ExportState,
   FrameState,
+  LayerCount,
+  LayerId,
+  LayerState,
+  LayerTransform,
   MockupMode,
   MockupState,
   RenderEngine,
@@ -18,7 +21,7 @@ import type {
   UiState,
 } from "@/types/editor";
 
-const initialMockup: MockupState = {
+const createInitialMockup = (): MockupState => ({
   imageUrl: null,
   imageName: null,
   mode: "screenshot",
@@ -39,7 +42,7 @@ const initialMockup: MockupState = {
   glassHighlightsEnabled: true,
   glassLightColor: "#ffffff",
   hideImage: false,
-};
+});
 
 const initialFrame: FrameState = {
   aspectRatio: "16:9",
@@ -57,14 +60,33 @@ const initialFrame: FrameState = {
   overlayOpacity: 35,
 };
 
-const initialCamera: CameraState = {
-  zoom: 1,
-  x: 0,
-  y: 0,
+const createInitialTransform = (): LayerTransform => ({
+  scale: 1,
+  positionX: 0,
+  positionY: 0,
+  positionZ: 0,
   rotationX: 0,
   rotationY: 0,
   rotationZ: 0,
   perspective: 42,
+});
+
+const LAYER_LAYOUTS: Record<LayerCount, Record<LayerId, LayerTransform>> = {
+  1: {
+    1: createInitialTransform(),
+    2: createInitialTransform(),
+    3: createInitialTransform(),
+  },
+  2: {
+    1: { ...createInitialTransform(), scale: 0.86, positionX: -22, rotationX: -8, rotationY: -18, positionZ: -24 },
+    2: { ...createInitialTransform(), scale: 0.86, positionX: 22, rotationX: -8, rotationY: 18, positionZ: 12 },
+    3: createInitialTransform(),
+  },
+  3: {
+    1: { ...createInitialTransform(), scale: 0.76, positionX: -28, positionY: 4, positionZ: -42, rotationX: -12, rotationY: -22, rotationZ: -4 },
+    2: { ...createInitialTransform(), scale: 0.82, positionX: 0, positionY: -2, positionZ: 18, rotationX: -10, rotationY: 0, rotationZ: 0 },
+    3: { ...createInitialTransform(), scale: 0.76, positionX: 28, positionY: 4, positionZ: -18, rotationX: -12, rotationY: 22, rotationZ: 4 },
+  },
 };
 
 const initialUi: UiState = {
@@ -87,10 +109,24 @@ const shadowPresets: Record<ShadowLevel, Pick<MockupState, "shadowBlur" | "shado
   strong: { shadowBlur: 120, shadowOpacity: 56, shadowSpread: 8 },
 };
 
+const cloneLayer = (layer: LayerState): LayerState => ({
+  ...layer,
+  mockup: { ...layer.mockup },
+  transform: { ...layer.transform },
+});
+
+const createLayer = (id: LayerId): LayerState => ({
+  id,
+  name: `Layer ${id}`,
+  mockup: createInitialMockup(),
+  transform: createInitialTransform(),
+});
+
 interface EditorStore {
-  mockup: MockupState;
+  activeLayerCount: LayerCount;
+  activeLayerId: LayerId;
+  layers: LayerState[];
   frame: FrameState;
-  camera: CameraState;
   ui: UiState;
   exportSettings: ExportState;
   past: EditorSnapshot[];
@@ -122,7 +158,9 @@ interface EditorStore {
   selectBackgroundImage: (id: string) => void;
   selectBackgroundPreset: (id: string) => void;
   setOverlay: (url: string | null) => void;
-  setCamera: (camera: Partial<CameraState>) => void;
+  setActiveLayerId: (layerId: LayerId) => void;
+  applyLayerLayout: (layerCount: LayerCount) => void;
+  setActiveLayerTransform: (transform: Partial<LayerTransform>) => void;
   applyCameraPreset: (preset: CameraPreset) => void;
   setExportFormat: (format: ExportFormat) => void;
   setExportQuality: (quality: number) => void;
@@ -132,10 +170,11 @@ interface EditorStore {
   redo: () => void;
 }
 
-const makeSnapshot = (state: Pick<EditorStore, "mockup" | "frame" | "camera" | "ui" | "exportSettings">): EditorSnapshot => ({
-  mockup: { ...state.mockup },
+const makeSnapshot = (state: Pick<EditorStore, "activeLayerCount" | "activeLayerId" | "layers" | "frame" | "ui" | "exportSettings">): EditorSnapshot => ({
+  activeLayerCount: state.activeLayerCount,
+  activeLayerId: state.activeLayerId,
+  layers: state.layers.map(cloneLayer),
   frame: { ...state.frame },
-  camera: { ...state.camera },
   ui: { ...state.ui },
   exportSettings: { ...state.exportSettings },
 });
@@ -150,16 +189,16 @@ const addObjectUrl = (urls: Set<string>, url: string | null) => {
   if (url?.startsWith("blob:")) urls.add(url);
 };
 
-const collectSnapshotObjectUrls = (snapshot: Pick<EditorSnapshot, "mockup" | "frame">, urls = new Set<string>()) => {
-  addObjectUrl(urls, snapshot.mockup.imageUrl);
+const collectSnapshotObjectUrls = (snapshot: Pick<EditorSnapshot, "layers" | "frame">, urls = new Set<string>()) => {
+  snapshot.layers.forEach((layer) => addObjectUrl(urls, layer.mockup.imageUrl));
   addObjectUrl(urls, snapshot.frame.backgroundImageUrl);
   addObjectUrl(urls, snapshot.frame.overlayUrl);
   snapshot.frame.backgroundImages.forEach((image) => addObjectUrl(urls, image.url));
   return urls;
 };
 
-const collectStoreObjectUrls = (state: Pick<EditorStore, "mockup" | "frame" | "past" | "future">) => {
-  const urls = collectSnapshotObjectUrls({ mockup: state.mockup, frame: state.frame });
+const collectStoreObjectUrls = (state: Pick<EditorStore, "layers" | "frame" | "past" | "future">) => {
+  const urls = collectSnapshotObjectUrls({ layers: state.layers, frame: state.frame });
   state.past.forEach((snapshot) => collectSnapshotObjectUrls(snapshot, urls));
   state.future.forEach((snapshot) => collectSnapshotObjectUrls(snapshot, urls));
   return urls;
@@ -171,7 +210,7 @@ const collectSnapshotsObjectUrls = (snapshots: EditorSnapshot[]) => {
   return urls;
 };
 
-const revokeUnreferencedObjectUrls = (candidates: Iterable<string>, state: Pick<EditorStore, "mockup" | "frame" | "past" | "future">) => {
+const revokeUnreferencedObjectUrls = (candidates: Iterable<string>, state: Pick<EditorStore, "layers" | "frame" | "past" | "future">) => {
   const referenced = collectStoreObjectUrls(state);
   new Set(candidates).forEach((url) => {
     if (!referenced.has(url)) revokeObjectUrl(url);
@@ -185,8 +224,11 @@ const makeLocalBackgroundId = () => {
 
 const isImageFile = (file: File) => file.type.startsWith("image/");
 
+const replaceActiveLayer = (layers: LayerState[], activeLayerId: LayerId, update: (layer: LayerState) => LayerState) =>
+  layers.map((layer) => (layer.id === activeLayerId ? update(layer) : cloneLayer(layer)));
+
 export const useEditorStore = create<EditorStore>((set, get) => {
-  const withHistory = (next: Partial<Pick<EditorStore, "mockup" | "frame" | "camera" | "ui" | "exportSettings">>) => {
+  const withHistory = (next: Partial<Pick<EditorStore, "activeLayerCount" | "activeLayerId" | "layers" | "frame" | "ui" | "exportSettings">>) => {
     const state = get();
     const discardedFutureUrls = collectSnapshotsObjectUrls(state.future);
     set({
@@ -197,34 +239,44 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     revokeUnreferencedObjectUrls(discardedFutureUrls, get());
   };
 
+  const updateActiveMockup = (mockup: Partial<MockupState>) => {
+    const state = get();
+    withHistory({
+      layers: replaceActiveLayer(state.layers, state.activeLayerId, (layer) => ({
+        ...layer,
+        mockup: { ...layer.mockup, ...mockup },
+        transform: { ...layer.transform },
+      })),
+    });
+  };
+
   return {
-    mockup: initialMockup,
+    activeLayerCount: 1,
+    activeLayerId: 1,
+    layers: [createLayer(1), createLayer(2), createLayer(3)],
     frame: initialFrame,
-    camera: initialCamera,
     ui: initialUi,
     exportSettings: initialExport,
     past: [],
     future: [],
-    setMockupImage: (url, name) => {
-      withHistory({ mockup: { ...get().mockup, imageUrl: url, imageName: name, hideImage: false } });
-    },
-    setMockupMode: (mode) => withHistory({ mockup: { ...get().mockup, mode } }),
-    setMockupStyle: (style) => withHistory({ mockup: { ...get().mockup, style } }),
-    setBorderRadius: (borderRadius) => withHistory({ mockup: { ...get().mockup, borderRadius } }),
-    setBorderWidth: (borderWidth) => withHistory({ mockup: { ...get().mockup, borderWidth } }),
-    setShadow: (shadow) => withHistory({ mockup: { ...get().mockup, shadow, ...shadowPresets[shadow] } }),
-    setShadowBlur: (shadowBlur) => withHistory({ mockup: { ...get().mockup, shadowBlur } }),
-    setShadowDirection: (shadowX, shadowY) => withHistory({ mockup: { ...get().mockup, shadowX, shadowY } }),
-    setShadowOpacity: (shadowOpacity) => withHistory({ mockup: { ...get().mockup, shadowOpacity } }),
-    setShadowSpread: (shadowSpread) => withHistory({ mockup: { ...get().mockup, shadowSpread } }),
-    setGlassRefraction: (glassRefraction) => withHistory({ mockup: { ...get().mockup, glassRefraction } }),
-    setGlassThickness: (glassThickness) => withHistory({ mockup: { ...get().mockup, glassThickness } }),
-    setGlassSpecular: (glassSpecular) => withHistory({ mockup: { ...get().mockup, glassSpecular } }),
-    setGlassBlur: (glassBlur) => withHistory({ mockup: { ...get().mockup, glassBlur } }),
-    setGlassColor: (glassColor) => withHistory({ mockup: { ...get().mockup, glassColor } }),
-    setGlassHighlightsEnabled: (glassHighlightsEnabled) => withHistory({ mockup: { ...get().mockup, glassHighlightsEnabled } }),
-    setGlassLightColor: (glassLightColor) => withHistory({ mockup: { ...get().mockup, glassLightColor } }),
-    setHideImage: (hideImage) => withHistory({ mockup: { ...get().mockup, hideImage } }),
+    setMockupImage: (url, name) => updateActiveMockup({ imageUrl: url, imageName: name, hideImage: false }),
+    setMockupMode: (mode) => updateActiveMockup({ mode }),
+    setMockupStyle: (style) => updateActiveMockup({ style }),
+    setBorderRadius: (borderRadius) => updateActiveMockup({ borderRadius }),
+    setBorderWidth: (borderWidth) => updateActiveMockup({ borderWidth }),
+    setShadow: (shadow) => updateActiveMockup({ shadow, ...shadowPresets[shadow] }),
+    setShadowBlur: (shadowBlur) => updateActiveMockup({ shadowBlur }),
+    setShadowDirection: (shadowX, shadowY) => updateActiveMockup({ shadowX, shadowY }),
+    setShadowOpacity: (shadowOpacity) => updateActiveMockup({ shadowOpacity }),
+    setShadowSpread: (shadowSpread) => updateActiveMockup({ shadowSpread }),
+    setGlassRefraction: (glassRefraction) => updateActiveMockup({ glassRefraction }),
+    setGlassThickness: (glassThickness) => updateActiveMockup({ glassThickness }),
+    setGlassSpecular: (glassSpecular) => updateActiveMockup({ glassSpecular }),
+    setGlassBlur: (glassBlur) => updateActiveMockup({ glassBlur }),
+    setGlassColor: (glassColor) => updateActiveMockup({ glassColor }),
+    setGlassHighlightsEnabled: (glassHighlightsEnabled) => updateActiveMockup({ glassHighlightsEnabled }),
+    setGlassLightColor: (glassLightColor) => updateActiveMockup({ glassLightColor }),
+    setHideImage: (hideImage) => updateActiveMockup({ hideImage }),
     setActiveTab: (activeTab) => set({ ui: { ...get().ui, activeTab } }),
     setHideUi: (hideUi) => set({ ui: { ...get().ui, hideUi } }),
     setFrame: (frame) => withHistory({ frame: { ...get().frame, ...frame } }),
@@ -297,8 +349,32 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setOverlay: (url) => {
       withHistory({ frame: { ...get().frame, overlayUrl: url } });
     },
-    setCamera: (camera) => withHistory({ camera: { ...get().camera, ...camera } }),
-    applyCameraPreset: (preset) => withHistory({ camera: CAMERA_PRESET_MAP[preset] }),
+    setActiveLayerId: (layerId) => {
+      if (layerId > get().activeLayerCount) return;
+      set({ activeLayerId: layerId });
+    },
+    applyLayerLayout: (layerCount) => {
+      const state = get();
+      withHistory({
+        activeLayerCount: layerCount,
+        activeLayerId: state.activeLayerId > layerCount ? 1 : state.activeLayerId,
+        layers: state.layers.map((layer) => ({
+          ...cloneLayer(layer),
+          transform: { ...LAYER_LAYOUTS[layerCount][layer.id] },
+        })),
+      });
+    },
+    setActiveLayerTransform: (transform) => {
+      const state = get();
+      withHistory({
+        layers: replaceActiveLayer(state.layers, state.activeLayerId, (layer) => ({
+          ...layer,
+          mockup: { ...layer.mockup },
+          transform: { ...layer.transform, ...transform },
+        })),
+      });
+    },
+    applyCameraPreset: (preset) => get().setActiveLayerTransform(CAMERA_PRESET_MAP[preset]),
     setExportFormat: (format) => withHistory({ exportSettings: { ...get().exportSettings, format, error: null } }),
     setExportQuality: (quality) => withHistory({ exportSettings: { ...get().exportSettings, quality } }),
     setExportRenderEngine: (renderEngine) => withHistory({ exportSettings: { ...get().exportSettings, renderEngine, error: null } }),
@@ -309,6 +385,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
       if (!previous) return;
       set({
         ...previous,
+        layers: previous.layers.map(cloneLayer),
         past: state.past.slice(0, -1),
         future: [makeSnapshot(state), ...state.future],
       });
@@ -319,6 +396,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
       if (!next) return;
       set({
         ...next,
+        layers: next.layers.map(cloneLayer),
         past: [...state.past, makeSnapshot(state)],
         future: state.future.slice(1),
       });

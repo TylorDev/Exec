@@ -1,28 +1,29 @@
 "use client";
 
 import { MockupRenderer } from "@/components/Viewport/MockupRenderer/MockupRenderer";
-import type { CameraState } from "@/types/editor";
+import type { LayerTransform, MockupState } from "@/types/editor";
 import styles from "./CssMockupPreview.module.scss";
 
 interface CssMockupPreviewProps {
-  camera: CameraState;
   className?: string;
+  mockup: MockupState;
+  transform: LayerTransform;
   variant?: "scene" | "card";
 }
 
-export function CssMockupPreview({ camera, className = "", variant = "scene" }: CssMockupPreviewProps) {
+export function CssMockupPreview({ className = "", mockup, transform, variant = "scene" }: CssMockupPreviewProps) {
   return (
     <div
       className={`${styles.preview} ${styles[variant]} ${className}`}
-      style={{ "--camera-perspective-base": `${camera.perspective * 18}px` } as React.CSSProperties}
+      style={{ "--camera-perspective-base": `${transform.perspective * 18}px` } as React.CSSProperties}
     >
       <div
         className={styles.transform}
         style={{
-          transform: `translate3d(${camera.x}%, ${camera.y}%, 0) scale(${camera.zoom}) rotateX(${camera.rotationX}deg) rotateY(${camera.rotationY}deg) rotateZ(${camera.rotationZ}deg)`,
+          transform: `translate3d(${transform.positionX}%, ${transform.positionY}%, calc(${transform.positionZ}px * var(--scene-export-scale, 1))) scale(${transform.scale}) rotateX(${transform.rotationX}deg) rotateY(${transform.rotationY}deg) rotateZ(${transform.rotationZ}deg)`,
         }}
       >
-        <MockupRenderer variant={variant} />
+        <MockupRenderer mockup={mockup} variant={variant} />
       </div>
     </div>
   );

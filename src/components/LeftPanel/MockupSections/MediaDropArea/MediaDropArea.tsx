@@ -18,7 +18,7 @@ export function MediaDropArea({ kind = "mockup" }: MediaDropAreaProps) {
   const setOverlay = useEditorStore((state) => state.setOverlay);
   const addBackgroundImages = useEditorStore((state) => state.addBackgroundImages);
   const imageName = useEditorStore((state) => {
-    if (kind === "mockup") return state.mockup.imageName;
+    if (kind === "mockup") return state.layers.find((layer) => layer.id === state.activeLayerId)?.mockup.imageName ?? null;
     if (kind === "background") return state.frame.backgroundImageName ?? (state.frame.backgroundImageUrl ? "Background loaded" : null);
     return state.frame.overlayUrl ? "Overlay loaded" : null;
   });

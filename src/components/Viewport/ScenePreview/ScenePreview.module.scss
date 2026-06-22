@@ -85,7 +85,17 @@
   display: flex;
   justify-content: center;
   transform-origin: center;
+  transform-style: preserve-3d;
   z-index: 3;
+}
+
+.layer {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  transform-style: preserve-3d;
 }
 
 @media (max-width: 720px) {

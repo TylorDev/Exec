@@ -74,10 +74,16 @@ const makeSerializableSnapshot = async (snapshot: EditorSnapshot): Promise<Edito
     backgroundImages: [],
     overlayUrl: await serializeAssetUrl(snapshot.frame.overlayUrl),
   },
-  mockup: {
-    ...snapshot.mockup,
-    imageUrl: await serializeAssetUrl(snapshot.mockup.imageUrl),
-  },
+  layers: await Promise.all(
+    snapshot.layers.map(async (layer) => ({
+      ...layer,
+      mockup: {
+        ...layer.mockup,
+        imageUrl: await serializeAssetUrl(layer.mockup.imageUrl),
+      },
+      transform: { ...layer.transform },
+    })),
+  ),
 });
 
 const downloadBlob = (blob: Blob, format: ExportFormat) => {
@@ -100,12 +106,18 @@ const getServerError = async (response: Response) => {
 };
 
 export async function exportScene(options: ExportSceneOptions) {
-  if (!options.snapshot.mockup.imageUrl || options.snapshot.mockup.hideImage) {
+  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount);
+
+  if (!visibleLayers.some((layer) => layer.mockup.imageUrl && !layer.mockup.hideImage)) {
     throw new Error("Upload a screenshot before exporting.");
   }
 
   if (options.format === "avif") {
     throw new Error("AVIF export is not supported by the Chromium server export yet.");
+  }
+
+  if (options.snapshot.exportSettings.renderEngine === "canvas" && options.snapshot.activeLayerCount > 1) {
+    throw new Error("Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.");
   }
 
   const payload: ServerExportPayload = {

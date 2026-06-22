@@ -6,9 +6,9 @@ import { useEditorStore } from "@/store/editorStore";
 import styles from "./Presets.module.scss";
 
 export function Presets() {
-  const camera = useEditorStore((state) => state.camera);
+  const activeLayer = useEditorStore((state) => state.layers.find((layer) => layer.id === state.activeLayerId) ?? state.layers[0]);
   const applyCameraPreset = useEditorStore((state) => state.applyCameraPreset);
-  const activePreset = getActiveCameraPreset(camera);
+  const activePreset = getActiveCameraPreset(activeLayer.transform);
 
   return (
     <div className={styles.presets} suppressHydrationWarning>
@@ -21,7 +21,7 @@ export function Presets() {
           type="button"
         >
           <span className={styles.presetPreview}>
-            <CssMockupPreview camera={preset.camera} variant="card" />
+            <CssMockupPreview mockup={activeLayer.mockup} transform={preset.transform} variant="card" />
           </span>
           <span className={styles.presetMeta}>
             <strong>{preset.label}</strong>

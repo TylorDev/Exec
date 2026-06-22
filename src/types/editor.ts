@@ -25,6 +25,8 @@ export type BackgroundCategory =
   | "Texture";
 export type CameraPreset = "center" | "top" | "bottom" | "left" | "right" | "close" | "wide";
 export type ExportFormat = "png" | "jpg" | "jpeg" | "webp" | "avif";
+export type LayerCount = 1 | 2 | 3;
+export type LayerId = 1 | 2 | 3;
 export type RenderEngine = "chromium" | "canvas";
 
 export interface Resolution {
@@ -87,14 +89,22 @@ export interface FrameState {
   overlayOpacity: number;
 }
 
-export interface CameraState {
-  zoom: number;
-  x: number;
-  y: number;
+export interface LayerTransform {
+  scale: number;
+  positionX: number;
+  positionY: number;
+  positionZ: number;
   rotationX: number;
   rotationY: number;
   rotationZ: number;
   perspective: number;
+}
+
+export interface LayerState {
+  id: LayerId;
+  mockup: MockupState;
+  name: `Layer ${LayerId}`;
+  transform: LayerTransform;
 }
 
 export interface UiState {
@@ -111,9 +121,10 @@ export interface ExportState {
 }
 
 export interface EditorSnapshot {
-  mockup: MockupState;
+  activeLayerCount: LayerCount;
+  activeLayerId: LayerId;
   frame: FrameState;
-  camera: CameraState;
+  layers: LayerState[];
   ui: UiState;
   exportSettings: ExportState;
 }
