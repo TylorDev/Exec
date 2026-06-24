@@ -1,3 +1,177 @@
 .controls {
-  display: contents;
+  display: grid;
+  gap: 10px;
+}
+
+.layerList {
+  border: 1px solid var(--color-border);
+  border-bottom: 0;
+  display: grid;
+  min-width: 0;
+}
+
+.layerItem {
+  background: rgba(255, 255, 255, 0.025);
+  border-bottom: 1px solid var(--color-border);
+  min-width: 0;
+}
+
+.layerItem[data-active="true"] .layerHeader {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.layerItem[data-hidden="true"] {
+  opacity: 0.6;
+}
+
+.layerHeader {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 18px 14px minmax(52px, 1fr) minmax(0, auto) 24px 24px;
+  min-height: 30px;
+  min-width: 0;
+  padding: 3px 4px;
+}
+
+.expandButton,
+.iconAction,
+.layerName {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--color-text);
+  display: inline-flex;
+  min-width: 0;
+  padding: 0;
+}
+
+.expandButton,
+.iconAction {
+  border-radius: 4px;
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.expandButton svg,
+.iconAction svg {
+  height: 15px;
+  width: 15px;
+}
+
+.expandButton svg {
+  transition: transform 140ms ease;
+}
+
+.expandButton[aria-expanded="false"] svg {
+  transform: rotate(-90deg);
+}
+
+.iconAction:hover,
+.expandButton:hover,
+.layerName:hover {
+  color: var(--primary-accent);
+}
+
+.iconAction[aria-pressed="true"] {
+  color: var(--primary-accent);
+}
+
+.swatch {
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  display: block;
+  height: 14px;
+  width: 14px;
+}
+
+.layerName {
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholderControls {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.placeholderToggle {
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  color: var(--disabled-color);
+  display: inline-flex;
+  flex: 0 0 18px;
+  height: 18px;
+  justify-content: center;
+  position: relative;
+  width: 18px;
+}
+
+.placeholderToggle input {
+  appearance: none;
+  inset: 0;
+  margin: 0;
+  position: absolute;
+}
+
+.placeholderToggle svg {
+  height: 12px;
+  pointer-events: none;
+  width: 12px;
+}
+
+.placeholderToggle:hover {
+  border-color: var(--primary-accent);
+  color: var(--color-text);
+}
+
+.layerBody {
+  background: rgba(0, 0, 0, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 4px;
+  padding: 4px 0 6px;
+}
+
+.layerControls {
+  display: grid;
+  gap: 0;
+}
+
+.lockedNotice {
+  align-items: center;
+  color: var(--disabled-color);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 6px;
+  margin: 0;
+  padding: 2px 10px 4px 36px;
+}
+
+.lockedNotice svg {
+  height: 13px;
+  width: 13px;
+}
+
+.emptyLayers {
+  align-items: center;
+  color: var(--disabled-color);
+  display: flex;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px;
+}
+
+.emptyLayers svg {
+  height: 16px;
+  width: 16px;
 }

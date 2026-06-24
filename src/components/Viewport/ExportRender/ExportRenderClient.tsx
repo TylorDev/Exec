@@ -51,7 +51,7 @@ export function ExportRenderClient() {
   const frame = useEditorStore((state) => state.frame);
   const activeLayerCount = useEditorStore((state) => state.activeLayerCount);
   const layers = useEditorStore((state) => state.layers);
-  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount);
+  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount && layer.isVisible);
 
   useEffect(() => {
     window.renderExecExport = (nextPayload) =>

@@ -106,7 +106,7 @@ const getServerError = async (response: Response) => {
 };
 
 export async function exportScene(options: ExportSceneOptions) {
-  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount);
+  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount && layer.isVisible);
 
   if (!visibleLayers.some((layer) => layer.mockup.imageUrl && !layer.mockup.hideImage)) {
     throw new Error("Upload a screenshot before exporting.");
@@ -116,7 +116,7 @@ export async function exportScene(options: ExportSceneOptions) {
     throw new Error("AVIF export is not supported by the Chromium server export yet.");
   }
 
-  if (options.snapshot.exportSettings.renderEngine === "canvas" && options.snapshot.activeLayerCount > 1) {
+  if (options.snapshot.exportSettings.renderEngine === "canvas" && visibleLayers.length > 1) {
     throw new Error("Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.");
   }
 

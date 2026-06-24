@@ -96,7 +96,8 @@ export function Export({ sceneRef }: ExportProps) {
       });
       return;
     }
-    if (exportSettings.renderEngine === "canvas" && activeLayerCount > 1) {
+    const visibleLayerCount = layers.filter((layer) => layer.id <= activeLayerCount && layer.isVisible).length;
+    if (exportSettings.renderEngine === "canvas" && visibleLayerCount > 1) {
       setExportStatus({
         error: "Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.",
         isExporting: false,

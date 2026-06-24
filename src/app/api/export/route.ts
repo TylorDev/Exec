@@ -65,7 +65,7 @@ const validatePayload = (payload: ServerExportPayload) => {
     throw new Error("Invalid export size.");
   }
 
-  const visibleLayers = payload.snapshot.layers.filter((layer) => layer.id <= payload.snapshot.activeLayerCount);
+  const visibleLayers = payload.snapshot.layers.filter((layer) => layer.id <= payload.snapshot.activeLayerCount && layer.isVisible);
 
   if (!visibleLayers.some((layer) => layer.mockup.imageUrl && !layer.mockup.hideImage)) {
     throw new Error("Upload a screenshot before exporting.");

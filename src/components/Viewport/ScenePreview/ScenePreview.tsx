@@ -32,7 +32,7 @@ export function ScenePreview({ sceneRef }: ScenePreviewProps) {
   const setHideUi = useEditorStore((state) => state.setHideUi);
   const resolution = getSceneResolution(frame);
   const background = getBackgroundCss(frame);
-  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount);
+  const visibleLayers = layers.filter((layer) => layer.id <= activeLayerCount && layer.isVisible);
   const ratio = resolution.width / resolution.height;
   const baseSize = useMemo(() => {
     const fallbackWidth = ratio >= 1 ? 980 : 560;

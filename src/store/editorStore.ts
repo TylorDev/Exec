@@ -117,6 +117,8 @@ const cloneLayer = (layer: LayerState): LayerState => ({
 
 const createLayer = (id: LayerId): LayerState => ({
   id,
+  isLocked: false,
+  isVisible: true,
   name: `Layer ${id}`,
   mockup: createInitialMockup(),
   transform: createInitialTransform(),
@@ -158,7 +160,10 @@ interface EditorStore {
   selectBackgroundImage: (id: string) => void;
   selectBackgroundPreset: (id: string) => void;
   setOverlay: (url: string | null) => void;
+  addLayer: () => void;
   setActiveLayerId: (layerId: LayerId) => void;
+  toggleLayerLocked: (layerId: LayerId) => void;
+  toggleLayerVisibility: (layerId: LayerId) => void;
   applyLayerLayout: (layerCount: LayerCount) => void;
   setActiveLayerTransform: (transform: Partial<LayerTransform>) => void;
   applyCameraPreset: (preset: CameraPreset) => void;
@@ -226,6 +231,8 @@ const isImageFile = (file: File) => file.type.startsWith("image/");
 
 const replaceActiveLayer = (layers: LayerState[], activeLayerId: LayerId, update: (layer: LayerState) => LayerState) =>
   layers.map((layer) => (layer.id === activeLayerId ? update(layer) : cloneLayer(layer)));
+
+const getFirstVisibleLayerId = (layers: LayerState[], activeLayerCount: LayerCount) => layers.find((layer) => layer.id <= activeLayerCount && layer.isVisible)?.id;
 
 export const useEditorStore = create<EditorStore>((set, get) => {
   const withHistory = (next: Partial<Pick<EditorStore, "activeLayerCount" | "activeLayerId" | "layers" | "frame" | "ui" | "exportSettings">>) => {
@@ -349,9 +356,37 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     setOverlay: (url) => {
       withHistory({ frame: { ...get().frame, overlayUrl: url } });
     },
+    addLayer: () => {
+      const state = get();
+      if (state.activeLayerCount >= 3) return;
+
+      const nextLayerCount = (state.activeLayerCount + 1) as LayerCount;
+      withHistory({
+        activeLayerCount: nextLayerCount,
+        activeLayerId: nextLayerCount,
+        layers: state.layers.map((layer) => (layer.id === nextLayerCount ? { ...cloneLayer(layer), isVisible: true } : cloneLayer(layer))),
+      });
+    },
     setActiveLayerId: (layerId) => {
       if (layerId > get().activeLayerCount) return;
       set({ activeLayerId: layerId });
+    },
+    toggleLayerLocked: (layerId) => {
+      const state = get();
+      withHistory({
+        layers: state.layers.map((layer) => (layer.id === layerId ? { ...cloneLayer(layer), isLocked: !layer.isLocked } : cloneLayer(layer))),
+      });
+    },
+    toggleLayerVisibility: (layerId) => {
+      const state = get();
+      const layers = state.layers.map((layer) => (layer.id === layerId ? { ...cloneLayer(layer), isVisible: !layer.isVisible } : cloneLayer(layer)));
+      const hiddenActiveLayer = state.activeLayerId === layerId && !layers.find((layer) => layer.id === layerId)?.isVisible;
+      const nextActiveLayerId = hiddenActiveLayer ? getFirstVisibleLayerId(layers, state.activeLayerCount) ?? state.activeLayerId : state.activeLayerId;
+
+      withHistory({
+        activeLayerId: nextActiveLayerId,
+        layers,
+      });
     },
     applyLayerLayout: (layerCount) => {
       const state = get();
@@ -360,7 +395,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
         activeLayerId: state.activeLayerId > layerCount ? 1 : state.activeLayerId,
         layers: state.layers.map((layer) => ({
           ...cloneLayer(layer),
-          transform: { ...LAYER_LAYOUTS[layerCount][layer.id] },
+          transform: layer.isLocked ? { ...layer.transform } : { ...LAYER_LAYOUTS[layerCount][layer.id] },
         })),
       });
     },
@@ -370,7 +405,7 @@ export const useEditorStore = create<EditorStore>((set, get) => {
         layers: replaceActiveLayer(state.layers, state.activeLayerId, (layer) => ({
           ...layer,
           mockup: { ...layer.mockup },
-          transform: { ...layer.transform, ...transform },
+          transform: layer.isLocked ? { ...layer.transform } : { ...layer.transform, ...transform },
         })),
       });
     },

@@ -449,10 +449,10 @@ export async function exportCanvasScene(options: ExportCanvasSceneOptions) {
     throw new Error("AVIF export is not supported by the Canvas/WebGL engine yet.");
   }
 
-  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount);
+  const visibleLayers = options.snapshot.layers.filter((layer) => layer.id <= options.snapshot.activeLayerCount && layer.isVisible);
   const layer = visibleLayers.find((visibleLayer) => visibleLayer.mockup.imageUrl && !visibleLayer.mockup.hideImage);
 
-  if (options.snapshot.activeLayerCount > 1) {
+  if (visibleLayers.length > 1) {
     throw new Error("Canvas/WebGL export supports one layer only. Use Chromium/Playwright for multi-layer scenes.");
   }
 

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState, type PointerEvent } fr
 import styles from "./SliderControl.module.scss";
 
 interface SliderControlProps {
+  disabled?: boolean;
   label: string;
   value: number;
   min: number;
@@ -58,7 +59,7 @@ const getSliderIcon = (label: string): LucideIcon => {
   return Gauge;
 };
 
-export function SliderControl({ label, value, min, max, step = 1, suffix = "", onChange }: SliderControlProps) {
+export function SliderControl({ disabled = false, label, value, min, max, step = 1, suffix = "", onChange }: SliderControlProps) {
   const inputId = useId();
   const sliderPanelId = useId();
   const sliderLabelId = useId();
@@ -111,6 +112,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
 
   const applyDragMovement = useCallback(
     (movementX: number) => {
+      if (disabled) return;
       const drag = dragRef.current;
       if (drag.pointerId === -1 || movementX === 0) return;
 
@@ -125,7 +127,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
       drag.lastSteps = nextSteps;
       onChange(roundToStep(drag.startValue + nextSteps * step, min, max, step));
     },
-    [max, min, onChange, step],
+    [disabled, max, min, onChange, step],
   );
 
   useEffect(() => {
@@ -163,7 +165,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
   const confirmDraft = () => {
     const trimmedValue = draftValue.trim();
     const nextValue = Number(trimmedValue);
-    if (trimmedValue && Number.isFinite(nextValue)) onChange(roundToStep(nextValue, min, max, step));
+    if (!disabled && trimmedValue && Number.isFinite(nextValue)) onChange(roundToStep(nextValue, min, max, step));
     setIsEditing(false);
   };
 
@@ -173,6 +175,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+    if (disabled) return;
     if (event.button !== 0 || isEditing) return;
 
     event.preventDefault();
@@ -221,12 +224,13 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.control} data-editing={isEditing}>
+      <div className={styles.control} data-disabled={disabled} data-editing={isEditing}>
         <button
           aria-controls={sliderPanelId}
           aria-expanded={isExpanded}
           aria-label={`${isExpanded ? "Hide" : "Show"} slider for ${label}`}
           className={styles.disclosure}
+          disabled={disabled}
           onClick={() => setIsExpanded((currentValue) => !currentValue)}
           type="button"
         >
@@ -240,6 +244,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
           <span className={styles.editValue}>
             <input
               className={styles.input}
+              disabled={disabled}
               id={inputId}
               inputMode="decimal"
               max={max}
@@ -262,6 +267,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
             aria-label={`${label}: ${displayValue}${suffix}`}
             className={styles.valueButton}
             data-dragging={simulatedCursor ? "true" : undefined}
+            disabled={disabled}
             onPointerCancel={handlePointerCancel}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -283,6 +289,7 @@ export function SliderControl({ label, value, min, max, step = 1, suffix = "", o
           <Slider.Root
             aria-labelledby={sliderLabelId}
             className={styles.sliderRoot}
+            disabled={disabled}
             max={max}
             min={min}
             onValueChange={([nextValue]) => onChange(roundToStep(nextValue, min, max, step))}

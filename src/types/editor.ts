@@ -102,6 +102,8 @@ export interface LayerTransform {
 
 export interface LayerState {
   id: LayerId;
+  isLocked: boolean;
+  isVisible: boolean;
   mockup: MockupState;
   name: `Layer ${LayerId}`;
   transform: LayerTransform;
